@@ -1,0 +1,1 @@
+window.Swal = require('admin-lte/plugins/sweetalert2/sweetalert2')

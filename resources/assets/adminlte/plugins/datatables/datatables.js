@@ -1,0 +1,1 @@
+window.$.fn.dataTable = require('admin-lte/plugins/datatables/jquery.dataTables');

@@ -1,0 +1,30 @@
+html {
+    font-family: 'Lato', sans-serif;
+}
+
+/* https://coolors.co/f3f4f6-7b9ac0-023f8a-026ba8-0196c6-18a0cb-2da9d0 */
+$color-base: #F3F4F6;
+$color-primary: #023F8A;
+$color-secondary: #026BA8;
+$color-text: #023F8A;
+$color-alt: #0196C6;
+
+.sabg-base {
+    background-color: $color-base !important;
+}
+.sabg-primary {
+    background-color: $color-primary !important;
+}
+.sabg-secondary {
+    background-color: $color-secondary !important;
+}
+.sabg-alt {
+    background-color: $color-alt !important;
+}
+
+// Header
+#header {
+    background: linear-gradient(130deg, rgba(255, 255, 255, 0.4), rgba(2, 63, 138, 0.7)), 
+        url('../images/pexels-photo-3467149.jpeg');
+    background-size: cover;
+}

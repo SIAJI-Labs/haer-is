@@ -10,15 +10,31 @@
         "production": "mix --production"
     },
     "devDependencies": {
+        "autoprefixer": "^10.3.4",
         "axios": "^0.21",
         "bootstrap": "^4.6.0",
         "jquery": "^3.6",
         "laravel-mix": "^6.0.6",
         "lodash": "^4.17.19",
         "popper.js": "^1.16.1",
-        "postcss": "^8.1.14",
+        "postcss": "^8.3.6",
         "resolve-url-loader": "^4.0.0",
         "sass": "^1.32.11",
-        "sass-loader": "^11.0.1"
+        "sass-loader": "^11.0.1",
+        "tailwindcss": "^2.2.15"
+    },
+    "dependencies": {
+        "@eastdesire/jscolor": "^2.4.6",
+        "admin-lte": "^3.1",
+        "chart.js": "^3.5.1",
+        "datatables.mark.js": "^2.1.0",
+        "datatables.net-plugins": "^1.10.24",
+        "inputmask": "^5.0.5",
+        "jquery": "^3.5.1",
+        "jquery-datatables-checkboxes": "^1.2.12",
+        "jquery-match-height": "^0.7.2",
+        "lightbox2": "^2.11.3",
+        "mark.js": "^8.11.1",
+        "owl.carousel": "^2.3.4"
     }
 }

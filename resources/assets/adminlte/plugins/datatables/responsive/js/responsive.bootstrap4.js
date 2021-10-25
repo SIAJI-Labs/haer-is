@@ -1,0 +1,1 @@
+window.$.fn.Responsive = require("admin-lte/plugins/datatables-responsive/js/responsive.bootstrap4");

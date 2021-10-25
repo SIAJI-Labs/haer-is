@@ -1,0 +1,1 @@
+window.bsCustomFileInput = require('admin-lte/plugins/bs-custom-file-input/bs-custom-file-input');

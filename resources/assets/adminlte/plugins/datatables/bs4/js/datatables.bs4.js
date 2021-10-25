@@ -1,0 +1,1 @@
+window.$.fn.dataTable = require('admin-lte/plugins/datatables-bs4/js/dataTables.bootstrap4');
