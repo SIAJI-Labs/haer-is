@@ -60,6 +60,14 @@ class User extends Authenticatable
      * 
      * @return model
      */
+    public function task()
+    {
+        return $this->hasMany(\App\Models\Task::class, 'user_id');
+    }
+    public function attendance()
+    {
+        return $this->hasMany(\App\Models\Attendance::class, 'user_id');
+    }
 
     /**
      * Foreign Key Relation
@@ -82,4 +90,28 @@ class User extends Authenticatable
             $model->{'uuid'} = (string) \Str::uuid();
         });
     }
+
+    /**
+     * Scope
+     * 
+     */
+    public function scopeGetActiveAttendace()
+    {
+        $data = $this
+            ->attendance()
+            ->where('date', date("Y-m-d"))
+            // ->whereNull('checkout_time')
+            ->first();
+
+        return !empty($data) ? $data : [];
+    }
+    // public function scopeGetPausedTimer()
+    // {
+    //     $data = [];
+    //     if(!empty($this->getActiveAttendace())){
+
+    //     }
+
+    //     return !empty($data) ? $data : [];
+    // }
 }

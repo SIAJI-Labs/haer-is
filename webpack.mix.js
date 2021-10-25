@@ -22,13 +22,14 @@ mix.sass('resources/assets/tailwind.scss', 'public/assets/css').options({
     processCssUrls: false,
     postCss: [tailwindcss('./tailwind.config.js')],
 });
-mix.js('resources/js/app.js', 'public/js')
-    .sass('resources/sass/app.scss', 'public/css')
-    .sourceMaps();
-
+// Tailwind - Minimal
+mix.sass('resources/assets/minimal-tailwind.scss', 'public/assets/css').options({
+    processCssUrls: false,
+    postCss: [tailwindcss('./tailwind.config.js')],
+});
 /*
  |--------------------------------------------------------------------------
- | Mix Asset Management (CMS)
+ | Mix Asset Management (System)
  |--------------------------------------------------------------------------
  |
  | Mix provides a clean, fluent API for defining some Webpack build steps
@@ -165,3 +166,8 @@ mix.copyDirectory([
 mix.copyDirectory([
     'node_modules/lightbox2/dist/js'
 ], 'public/assets/plugins/lightbox2/js');
+
+// Dashboard
+mix.scripts([
+'resources/assets/js/s.js'
+], 'public/assets/js/s.js').version();

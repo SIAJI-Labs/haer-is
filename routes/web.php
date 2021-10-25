@@ -30,13 +30,29 @@ Route::group([
 // System Page
 Route::group([
     'prefix' => 's',
-    'as' => 'system.'
+    'as' => 'system.',
+    'middleware' => ['web', 'auth']
 ], function(){
     Route::any('/', function(){
         return redirect()->route('system.index');
     });
     // Dashboard
     Route::get('dashboard', \App\Http\Controllers\System\DashboardController::class)->name('index');
+    // Attendance
+    Route::resource('attendance', \App\Http\Controllers\System\AttendanceController::class);
+
+    Route::group([
+        'prefix' => 'json',
+        'as' => 'json.'
+    ], function(){
+        Route::group([
+            'prefix' => 'datatable',
+            'as' => 'datatable.'
+        ], function(){
+            Route::get('attendance', [\App\Http\Controllers\System\AttendanceController::class, 'datatableAll'])->name('attendance.all');
+            Route::get('task', [\App\Http\Controllers\System\TaskController::class, 'datatableAll'])->name('task.all');
+        });
+    });
 });
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

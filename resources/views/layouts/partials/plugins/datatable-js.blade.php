@@ -1,5 +1,5 @@
 <!-- Mark Js -->
-@include('layouts.adm.partials.plugins.mark-js')
+@include('layouts.partials.plugins.mark-js')
 <!-- Datatable -->
 <script src="{{ mix('assets/plugins/datatables/datatables.js') }}"></script>
 <script src="{{ mix('assets/plugins/datatables/bs4/js/dataTables.bootstrap4.js') }}"></script>

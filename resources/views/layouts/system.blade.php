@@ -41,8 +41,9 @@
         <link rel="stylesheet" href="{{ mix('assets/adminlte/css/app-custom.css') }}">
         <!-- Google Font: Source Sans Pro -->
         <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
-
-        {{-- Sweetalert2 --}}
+        <!-- Tailwind - Without Base -->
+        <link href="{{ mix('assets/css/minimal-tailwind.css') }}" rel="stylesheet">
+        <!-- Sweetalert2 -->
         <link href="{{ mix('assets/plugins/sweetalert2/css/sweetalert2.css') }}" rel="stylesheet">
         <link href="{{ mix('assets/plugins/sweetalert2/css/bootstrap-4.css') }}" rel="stylesheet">
 
@@ -145,6 +146,7 @@
         <script src="{{ mix('assets/adminlte/js/app.js') }}"></script>
         {{-- <script src="{{ mix('assets/adminlte/js/app-custom.js') }}"></script> --}}
         <script src="{{ mix('assets/adminlte/js/function.js') }}"></script>
+        <script src="{{ mix('assets/js/s.js') }}"></script>
         <!-- Moment JS -->
         <script src="{{ mix('assets/plugins/moment/dist/moment.js') }}"></script>
 

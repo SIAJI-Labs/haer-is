@@ -26,5 +26,13 @@ class SeederUser extends Seeder
             'password' => bcrypt('user'),
             'is_active' => true
         ]);
+
+        User::create([
+            'name' => 'Dwi Aji',
+            'username' => 'dwiaji',
+            'email' => 'si.aji03@gmail.com',
+            'password' => bcrypt('dwiaji'),
+            'is_active' => true
+        ]);
     }
 }
