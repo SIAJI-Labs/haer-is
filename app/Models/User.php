@@ -60,6 +60,10 @@ class User extends Authenticatable
      * 
      * @return model
      */
+    public function userSetting()
+    {
+        return $this->hasMany(\App\Models\UserSetting::class, 'user_id');
+    }
     public function task()
     {
         return $this->hasMany(\App\Models\Task::class, 'user_id');
@@ -105,13 +109,4 @@ class User extends Authenticatable
 
         return !empty($data) ? $data : [];
     }
-    // public function scopeGetPausedTimer()
-    // {
-    //     $data = [];
-    //     if(!empty($this->getActiveAttendace())){
-
-    //     }
-
-    //     return !empty($data) ? $data : [];
-    // }
 }

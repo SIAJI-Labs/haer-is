@@ -231,7 +231,7 @@
                 <div class="modal-body">
                     <div class="tw__mb-4 tw__bg-blue-100 tw__text-blue-700 tw__px-4 tw__py-3 tw__rounded tw__relative" role="alert">
                         <strong class="tw__font-bold">Data Kehadiran!</strong>
-                        <span class="tw__block">Anda melakukan check-in kehadiran pada <u>{{ !empty(\Auth::user()->getActiveAttendace()) ? \Auth::user()->getActiveAttendace()->checkin_time : '[waktu check-in]' }}</u></span>
+                        <span class="tw__block">Anda melakukan check-in kehadiran pada <u>{{ !empty(\Auth::user()->getActiveAttendace()) ? \Auth::user()->getActiveAttendace()->checkin_time : '[waktu check-in]' }} WIB</u></span>
                     </div>
 
                     <div class="form-group row">
@@ -500,6 +500,7 @@
                 timePicker: true,
                 timePicker24Hour: true,
                 startDate: moment().format('HH:mm'),
+                // maxDate: "{{ date("H:i:s") }}",
                 timePickerIncrement: 1,
                 locale: {
                     format: 'HH:mm'
@@ -703,7 +704,7 @@
             });
 
             $.post(targetUrl, ($(e.target).serialize())+`&validate=${selectedId}`, (result) => {
-                // location.reload();
+                location.reload();
                 console.log(result);
             });
         });

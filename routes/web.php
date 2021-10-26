@@ -41,10 +41,15 @@ Route::group([
     // Attendance
     Route::resource('attendance', \App\Http\Controllers\System\AttendanceController::class);
 
+    // Profile
+    Route::resource('profile', \App\Http\Controllers\System\ProfileController::class);
+
+    // Json
     Route::group([
         'prefix' => 'json',
         'as' => 'json.'
     ], function(){
+        // Datatable
         Route::group([
             'prefix' => 'datatable',
             'as' => 'datatable.'

@@ -82,7 +82,7 @@ class AttendanceController extends Controller
             // Task
             $task = [];
             foreach($request->task as $key => $taskRequest){
-                if(!empty($taskRequest['name']) && !empty($taskRequest['progress'])){
+                if(($taskRequest['name'] != "" && $taskRequest['name'] != null) && ($taskRequest['progress'] != "" && $taskRequest['progress'] != null)){
                     // Create new Task
                     $taskData = \App\Models\Task::create([
                         'user_id' => \Auth::user()->id,
@@ -198,7 +198,7 @@ class AttendanceController extends Controller
                     // Create new Task
                     $taskData = \App\Models\Task::create([
                         'user_id' => \Auth::user()->id,
-                        'progress' => $taskRequest['progress'],
+                        'progress' => 0,
                         'name' => $taskRequest['name'],
                         'notes' => null
                     ]);

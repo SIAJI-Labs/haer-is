@@ -33,14 +33,14 @@
                 </li>
 
                 <li class="nav-header">MISCELLANEOUS</li>
-                {{-- <li class="nav-item">
-                    <a href="{{ route('adm.profile.index') }}" class="nav-link d-flex align-items-center {{ !empty($sidebar_menu) ? ($sidebar_menu == 'profile' ? 'active' : '') : '' }}">
+                <li class="nav-item">
+                    <a href="{{ route('system.profile.index') }}" class="nav-link d-flex align-items-center {{ !empty($sidebar_menu) ? ($sidebar_menu == 'profile' ? 'active' : '') : '' }}">
                         <i class="nav-icon fas fa-users-cog"></i>
                         <p>
                             Profile
                         </p>
                     </a>
-                </li> --}}
+                </li>
                 {{-- @can('website_configuration-list')
                     <li class="nav-item">
                         <a href="{{ route('adm.website-configuration.index') }}" class="nav-link d-flex align-items-center {{ !empty($sidebar_menu) ? ($sidebar_menu == 'website-configuration' ? 'active' : '') : '' }}">
