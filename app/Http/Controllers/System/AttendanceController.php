@@ -93,7 +93,7 @@ class AttendanceController extends Controller
 
                     $task[] = new \App\Models\AttendanceTask([
                         'task_id' => $taskData->id,
-                        'progress_start' => $taskData->progress,
+                        'progress_start' => 0,
                         'progress_end' => $taskData->progress
                     ]);
                 }
@@ -198,14 +198,14 @@ class AttendanceController extends Controller
                     // Create new Task
                     $taskData = \App\Models\Task::create([
                         'user_id' => \Auth::user()->id,
-                        'progress' => 0,
+                        'progress' => $taskRequest['progress'],
                         'name' => $taskRequest['name'],
                         'notes' => null
                     ]);
 
                     $task[] = new \App\Models\AttendanceTask([
                         'task_id' => $taskData->id,
-                        'progress_start' => $taskData->progress,
+                        'progress_start' => 0,
                         'progress_end' => $taskRequest['progress']
                     ]);
                 }
