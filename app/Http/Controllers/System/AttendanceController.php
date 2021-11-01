@@ -7,13 +7,20 @@ use Illuminate\Http\Request;
 
 class AttendanceController extends Controller
 {
+    private $taskModel, 
+        $attendanceModel, 
+        $attendanceTaskModel, 
+        $attendancePauseModel;
     /**
      * Instantiate a new AttendanceController instance.
      * 
      */
     public function __construct()
     {
-        // 
+        $this->taskModel = new \App\Models\Task();
+        $this->attendanceModel = new \App\Models\Attendance();
+        $this->attendanceTaskModel = new \App\Models\AttendanceTask();
+        $this->attendancePauseModel = new \App\Models\AttendancePause();
     }
 
     /**
@@ -72,7 +79,7 @@ class AttendanceController extends Controller
         ]);
 
         \DB::transaction(function () use ($request) {
-            $attendance = new \App\Models\Attendance();
+            $attendance = $this->attendanceModel;
             $attendance->user_id = \Auth::user()->id;
             $attendance->date = date("Y-m-d", strtotime($request->date));
             $attendance->checkin_time = $request->time.':00';
@@ -84,14 +91,14 @@ class AttendanceController extends Controller
             foreach($request->task as $key => $taskRequest){
                 if(($taskRequest['name'] != "" && $taskRequest['name'] != null) && ($taskRequest['progress'] != "" && $taskRequest['progress'] != null)){
                     // Create new Task
-                    $taskData = \App\Models\Task::create([
+                    $taskData = $this->taskModel->create([
                         'user_id' => \Auth::user()->id,
                         'progress' => $taskRequest['progress'],
                         'name' => $taskRequest['name'],
                         'notes' => null
                     ]);
 
-                    $task[] = new \App\Models\AttendanceTask([
+                    $task[] = new $this->attendanceTaskModel([
                         'task_id' => $taskData->id,
                         'progress_start' => 0,
                         'progress_end' => $taskData->progress
@@ -101,12 +108,12 @@ class AttendanceController extends Controller
 
             if($request->has('validate') && $request->validate != ''){
                 $uuid = explode(',', $request->validate);
-                $taskDatas = \App\Models\Task::where('user_id', \Auth::user()->id)
+                $taskDatas = $this->taskModel->where('user_id', \Auth::user()->id)
                     ->whereIn('uuid', $uuid)
                     ->get();
                 if(count($taskDatas) > 0){
                     foreach($taskDatas as $taskData){
-                        $task[] = new \App\Models\AttendanceTask([
+                        $task[] = new $this->attendanceTaskModel([
                             'task_id' => $taskData->id,
                             'progress_start' => $taskData->progress,
                             'progress_end' => $taskData->progress
@@ -133,7 +140,16 @@ class AttendanceController extends Controller
      */
     public function show($id)
     {
-        //
+        $data = $this->attendanceModel
+            ->with('attendanceTask', 'attendanceTask.task')
+            ->where('uuid', $id)
+            ->firstOrFail();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Data Fetched',
+            'data' => $data
+        ]);
     }
 
     /**
@@ -156,8 +172,12 @@ class AttendanceController extends Controller
      */
     public function update(Request $request, $id)
     {
-        if($request->has('type') && $request->type == 'pause'){
-            return $this->updatePause($request, $id);
+        if($request->has('type') && $request->type != ''){
+            if($request->type == 'pause'){
+                return $this->updatePause($request, $id);
+            } else if($request->type == 'new_task'){
+                return $this->updateTask($request, $id);
+            }
         }
 
         $request->validate([
@@ -182,7 +202,7 @@ class AttendanceController extends Controller
         ]);
 
         \DB::transaction(function () use ($request, $id) {
-            $attendance = \App\Models\Attendance::where('uuid', $id)->firstOrFail();
+            $attendance = $this->attendanceModel->where('uuid', $id)->firstOrFail();
             $attendance->checkout_time = $request->time.':00';
             $attendance->save();
 
@@ -191,19 +211,19 @@ class AttendanceController extends Controller
             foreach($request->task as $key => $taskRequest){
                 if(isset($taskRequest['validate']) && !empty($taskRequest['validate'])){
                     // Get existing Task
-                    $taskData = \App\Models\AttendanceTask::findOrFail($taskRequest['validate']);
+                    $taskData = $this->attendanceTaskModel->where('uuid', $taskRequest['validate'])->firstOrFail();
                     $taskData->progress_end = $taskRequest['progress'];
                     $taskData->save();
                 } else {
                     // Create new Task
-                    $taskData = \App\Models\Task::create([
+                    $taskData = $this->taskModel->create([
                         'user_id' => \Auth::user()->id,
                         'progress' => $taskRequest['progress'],
                         'name' => $taskRequest['name'],
                         'notes' => null
                     ]);
 
-                    $task[] = new \App\Models\AttendanceTask([
+                    $task[] = new $this->attendanceTaskModel([
                         'task_id' => $taskData->id,
                         'progress_start' => 0,
                         'progress_end' => $taskRequest['progress']
@@ -244,11 +264,11 @@ class AttendanceController extends Controller
         ]);
 
         \DB::transaction(function () use ($request, $id) {
-            $attendance = \App\Models\Attendance::where('uuid', $id)->firstOrFail();
+            $attendance = $this->attendanceModel->where('uuid', $id)->firstOrFail();
             
-            $pauseData = new \App\Models\AttendancePause();
+            $pauseData = $this->attendancePauseModel;
             if($request->has('pause_id') && $request->pause_id != ''){
-                $pauseData = \App\Models\AttendancePause::where('id', $request->pause_id)
+                $pauseData = $this->attendancePauseModel->where('id', $request->pause_id)
                     ->where('attendance_id', $attendance->id)
                     ->firstOrFail();
 
@@ -279,6 +299,65 @@ class AttendanceController extends Controller
     }
 
     /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function updateTask(Request $request, $id)
+    {
+        $request->validate([
+            'task.*.include' => ['required', 'string'],
+            'task.*.progress' => ['required', 'numeric', 'digits_between:0,100'],
+            'task.*.name' => ['required', 'string', 'max:191']
+        ], [
+            'task.*.include.required' => 'Field [checklist] wajib diisi!',
+            'task.*.include.string' => 'Nilai pada Field [checklist] tidak valid!',
+            'task.*.progress.required' => 'Field Progress wajib diisi!',
+            'task.*.progress.numeric' => 'Nilai pada Field Progress tidak valid!',
+            'task.*.progress.digits_between' => 'Nilai pada Field Progress harus diantara 0 - 100',
+            'task.*.name.required' => 'Field Nama wajib diisi!',
+            'task.*.name.string' => 'Nilai pada Field Nama tidak valid!',
+            'task.*.name.max' => 'Nilai pada Field Nama maksimal 191 karakter!',
+        ]);
+
+        \DB::transaction(function () use ($request, $id) {
+            $attendance = $this->attendanceModel->where('uuid', $id)->firstOrFail();
+            
+            // Task
+            $task = [];
+            foreach($request->task as $key => $taskRequest){
+                if(($taskRequest['name'] != "" && $taskRequest['name'] != null) && ($taskRequest['progress'] != "" && $taskRequest['progress'] != null)){
+                    // Create new Task
+                    $taskData = $this->taskModel->create([
+                        'user_id' => \Auth::user()->id,
+                        'progress' => $taskRequest['progress'],
+                        'name' => $taskRequest['name'],
+                        'notes' => null
+                    ]);
+
+                    $task[] = new $this->attendanceTaskModel([
+                        'task_id' => $taskData->id,
+                        'progress_start' => 0,
+                        'progress_end' => $taskData->progress
+                    ]);
+                }
+            }
+
+            if(!empty($task)){
+                // Apply Task to Attendance Data
+                $attendance->attendanceTask()->saveMany($task);
+            }
+        });
+        
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Data berhasil diperbaharui'
+        ]);
+    }
+
+    /**
      * Remove the specified resource from storage.
      *
      * @param  int  $id
@@ -295,10 +374,17 @@ class AttendanceController extends Controller
      */
     public function datatableAll(Request $request)
     {
-        $model = new \App\Models\Attendance();
+        $model = $this->attendanceModel;
 
         $data = $model->query();
         $data->select($model->getTable().'.*');
+
+        if($request->has('filter_year') && $request->filter_year != ""){
+            $data->whereYear('date', $request->filter_year);
+        }
+        if($request->has('filter_month') && $request->filter_month != ""){
+            $data->whereMonth('date', $request->filter_month);
+        }
 
         return datatables()
             ->of($data->orderBy('date', 'desc')->withCount('attendanceTask', 'attendancePause')->with('user', 'attendanceTask', 'attendanceTask.task'))

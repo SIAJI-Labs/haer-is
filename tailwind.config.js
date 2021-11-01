@@ -9,7 +9,7 @@ module.exports = {
     extend: {},
   },
   variants: {
-    zIndex: ['responsive', 'hover']
+    zIndex: ['responsive', 'hover'],
   },
   plugins: [],
   prefix: 'tw__',

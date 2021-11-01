@@ -211,8 +211,8 @@
                                 text: "Semua data yang belum disimpan akan diabaikan!",
                                 icon: 'warning',
                                 showCancelButton: true,
-                                confirmButtonText: 'Segarkan Halaman!',
-                                cancelButtonText: 'Tutup!',
+                                confirmButtonText: 'Tetap Segarkan Halaman!',
+                                cancelButtonText: 'Batalkan!',
                                 reverseButtons: true,
                             }).then((result) => {
                                 if (result.value) {

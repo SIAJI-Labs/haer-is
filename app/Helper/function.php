@@ -41,3 +41,83 @@ function whatsappFormat($attendanceData, $type = 'check-in')
 
     return $template;
 }
+
+/**
+ * Date Format
+ * 
+ */
+function dateFormat($rawDate, $type = 'days'){
+    $date = date("Y-m-d H:i:s", strtotime($rawDate));
+    $result = '';
+
+    switch($type){
+        case 'days':
+            $result = date('l', strtotime($date));
+            switch($result){
+                case 'Monday':
+                    $result = 'Senin';
+                    break;
+                case 'Tuesday':
+                    $result = 'Selasa';
+                    break;
+                case 'Wednesday':
+                    $result = 'Rabu';
+                    break;
+                case 'Thursday':
+                    $result = 'Kamis';
+                    break;
+                case 'Friday':
+                    $result = "Jum'at";
+                    break;
+                case 'Saturday':
+                    $result = 'Sabtu';
+                    break;
+                case 'Sunday':
+                    $result = 'Minggu';
+                    break;
+            }
+            break;
+        case 'months':
+            $result = date('F', strtotime($date));
+            switch($result){
+                case 'January':
+                    $result = 'Januari';
+                    break;
+                case 'February':
+                    $result = 'Februari';
+                    break;
+                case 'March':
+                    $result = 'Maret';
+                    break;
+                case 'April':
+                    $result = 'April';
+                    break;
+                case 'May':
+                    $result = 'Mei';
+                    break;
+                case 'June':
+                    $result = 'Juni';
+                    break;
+                case 'July':
+                    $result = 'Juli';
+                    break;
+                case 'August':
+                    $result = 'Agustus';
+                    break;
+                case 'September':
+                    $result = 'September';
+                    break;
+                case 'October':
+                    $result = 'Oktober';
+                    break;
+                case 'November':
+                    $result = 'November';
+                    break;
+                case 'December':
+                    $result = 'Desember';
+                    break;
+            }
+            break;
+    }
+    return $result;
+}

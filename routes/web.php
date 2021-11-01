@@ -49,6 +49,10 @@ Route::group([
         'prefix' => 'json',
         'as' => 'json.'
     ], function(){
+        // Attendance
+        Route::get('attendance/{id}', [\App\Http\Controllers\System\AttendanceController::class, 'show'])->name('attendance.show');
+        Route::get('attendance', [\App\Http\Controllers\System\AttendanceController::class, 'index'])->name('attendance.index');
+
         // Datatable
         Route::group([
             'prefix' => 'datatable',

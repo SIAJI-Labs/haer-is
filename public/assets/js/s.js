@@ -49,8 +49,92 @@ function whatsappFormat(data, task)
     template += `%0A${data.name} | ${data.date} | ${data.time}`;
     template += `%0AActivities`;
     task.forEach((data, row) => {
-        template += `%0A- ${data.progress > 0 ? '['+data.progress+'%]' : data.progress} ${data.name}`;
+        template += `%0A- ${data.progress > 0 ? '['+data.progress+'%] ' : ''}${data.name}`;
     });
     template += `%0ALocation: `;
     return template;
+}
+
+/**
+ * 
+ * @param {*} date 
+ * @param {*} type 
+ */
+function convertMomentJsToIndonesia(rawDate, type = 'days'){
+    let date = moment(rawDate);
+    let result = '';
+
+    switch(type){
+        case 'days':
+            result = moment(date).format('dddd');
+
+            switch(result){
+                case 'Monday':
+                    result = "Senin";
+                    break;
+                case 'Tuesday':
+                    result = "Selasa";
+                    break;
+                case 'Wednesday':
+                    result = "Rabu";
+                    break;
+                case 'Thursday':
+                    result = "Kamis";
+                    break;
+                case 'Friday':
+                    result = "Jum'at";
+                    break;
+                case 'Saturday':
+                    result = "Sabtu";
+                    break;
+                case 'Sunday':
+                    result = "Minggu";
+                    break;
+            }
+            break;
+        case 'months':
+            result = moment(date).format('MMMM');
+
+            switch(result){
+                case 'January':
+                    result = 'Januari';
+                    break;
+                case 'February':
+                    result = 'Februari';
+                    break;
+                case 'March':
+                    result = 'Maret';
+                    break;
+                case 'April':
+                    result = 'April';
+                    break;
+                case 'May':
+                    result = 'Mei';
+                    break;
+                case 'June':
+                    result = 'Juni';
+                    break;
+                case 'July':
+                    result = 'July';
+                    break;
+                case 'August':
+                    result = 'Agustus';
+                    break;
+                case 'September':
+                    result = 'September';
+                    break;
+                case 'October':
+                    result = 'Oktober';
+                    break;
+                case 'November':
+                    result = 'November';
+                    break;
+                case 'December':
+                    result = 'December';
+                    break;
+            }
+            break;
+    }
+
+    return result;
 }

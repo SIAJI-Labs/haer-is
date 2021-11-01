@@ -7,13 +7,14 @@ use Illuminate\Http\Request;
 
 class TaskController extends Controller
 {
+    private $taskModel;
     /**
      * Instantiate a new TaskController instance.
      * 
      */
     public function __construct()
     {
-        // 
+        $this->taskModel = new \App\Models\Task();
     }
 
     /**
@@ -98,10 +99,8 @@ class TaskController extends Controller
      */
     public function datatableAll(Request $request)
     {
-        $model = new \App\Models\Task();
-
-        $data = $model->query();
-        $data->select($model->getTable().'.*');
+        $data = $this->taskModel->query();
+        $data->select($this->taskModel->getTable().'.*');
 
         if($request->has('filter_unfinished') && $request->filter_unfinished != ''){
             $data->where('progress', '<', 100);
