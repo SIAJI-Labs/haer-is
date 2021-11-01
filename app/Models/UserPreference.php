@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
-class UserSetting extends Model
+class UserPreference extends Model
 {
     use HasFactory;
 
@@ -18,8 +18,7 @@ class UserSetting extends Model
     protected $fillable = [
         'user_id',
         'key',
-        'value',
-        'is_default'
+        'value'
     ];
 
     /**
@@ -55,6 +54,10 @@ class UserSetting extends Model
      * 
      * @return model
      */
+    public function attendanceLocation()
+    {
+        return $this->hasMany(\App\Models\Attendance::class, 'location');
+    }
 
     /**
      * Foreign Key Relation

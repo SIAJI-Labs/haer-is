@@ -13,18 +13,12 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('user_settings', function (Blueprint $table) {
-            $table->id();
-            $table->uuid('uuid')->index();
-            $table->bigInteger('user_id')->unsigned();
-            $table->string('key');
-            $table->string('value');
-            $table->boolean('is_default')->default(false);
-            $table->timestamps();
+        Schema::table('attendances', function (Blueprint $table) {
+            $table->bigInteger('location')->unsigned()->nullable()->after('user_id');
 
-            $table->foreign('user_id')
+            $table->foreign('location')
                 ->references('id')
-                ->on('users')
+                ->on('user_preferences')
                 ->cascadeOnUpdate()
                 ->cascadeOnDelete();
         });
@@ -37,6 +31,9 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('user_settings');
+        Schema::table('attendances', function (Blueprint $table) {
+            $table->dropForeign('attendances_location_foreign');
+            $table->dropColumn('location');
+        });
     }
 };

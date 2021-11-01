@@ -6,6 +6,7 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Str;
 
 class User extends Authenticatable
 {
@@ -60,9 +61,9 @@ class User extends Authenticatable
      * 
      * @return model
      */
-    public function userSetting()
+    public function userPreference()
     {
-        return $this->hasMany(\App\Models\UserSetting::class, 'user_id');
+        return $this->hasMany(\App\Models\UserPreference::class, 'user_id');
     }
     public function task()
     {
@@ -91,7 +92,7 @@ class User extends Authenticatable
         // Listen to Create Event
         static::creating(function ($model) {
             // Always generate UUID on Data Create
-            $model->{'uuid'} = (string) \Str::uuid();
+            $model->{'uuid'} = (string) Str::uuid();
         });
     }
 

@@ -462,6 +462,8 @@
                             let date = `${convertMomentJsToIndonesia(rawDate, 'days')}, ${moment(rawDate).format('DD')} ${convertMomentJsToIndonesia(rawDate, 'months')} ${moment(rawDate).format('YYYY')}`;
                             return `
                                 <span>${date}</span>
+                                <hr class="my-1"/>
+                                <small>Lokasi: ${!(jQuery.isEmptyObject(data.location)) ? data.location.value : '-'}</small>
                             `;
                         }
                     }, {
@@ -472,14 +474,15 @@
                                 'name': data.user.name,
                                 'date': moment(data.date).format('DD/MM/YYYY'),
                                 'time': data.checkin_time,
-                                'type': 'check-in'
+                                'type': 'check-in',
+                                'location': !(jQuery.isEmptyObject(data.location)) ? data.location.value : null
                             };
                             let formatedTask = [];
                             if(!(jQuery.isEmptyObject(data.attendance_task))){
                                 (data.attendance_task).forEach((data, row) => {
                                     formatedTask.push({
                                         'name': data.task.name,
-                                        'progress': data.progress_start
+                                        'progress': data.progress_start,
                                     });
                                 });
                             }
@@ -506,7 +509,8 @@
                                 'name': data.user.name,
                                 'date': moment(data.date).format('DD/MM/YYYY'),
                                 'time': data.checkout_time,
-                                'type': 'check-out'
+                                'type': 'check-out',
+                                'location': !(jQuery.isEmptyObject(data.location)) ? data.location.value : null
                             };
                             let formatedTask = [];
                             if(!(jQuery.isEmptyObject(data.attendance_task))){
@@ -567,6 +571,64 @@
                         }
                     }
                 ]
+            });
+
+            $("#input-location").select2({
+                theme: 'bootstrap4',
+                placeholder: 'Cari Lokasi',
+                ajax: {
+                    url: "{{ route('system.json.select2.user-preference.select2') }}",
+                    delay: 250,
+                    data: function (params) {
+                        var query = {
+                            search: params.term,
+                            page: params.page || 1,
+                            type: 'location'
+                        }
+
+                        // Query parameters will be ?search=[term]&type=public
+                        return query;
+                    },
+                    processResults: function (data, params) {
+                        var items = $.map(data.data, function(obj){
+                            obj.id = obj.uuid;
+                            obj.text = `${obj.value}${obj.is_default ? '- Default' : ''}`;
+
+                            return obj;
+                        });
+                        params.page = params.page || 1;
+
+                        console.log(items);
+                        // Transforms the top-level key of the response object from 'items' to 'results'
+                        return {
+                            results: items,
+                            pagination: {
+                                more: params.page < data.last_page
+                            }
+                        };
+                    },
+                },
+                templateResult: function (item) {
+                    // console.log(item);
+                    // No need to template the searching text
+                    if (item.loading) {
+                        return item.text;
+                    }
+                    
+                    var term = select2_query.term || '';
+                    var $result = markMatch(item.text, term);
+
+                    return $result;
+                },
+                language: {
+                    searching: function (params) {
+                        // Intercept the query as it is happening
+                        select2_query = params;
+                        
+                        // Change this to be appropriate for your application
+                        return 'Searching...';
+                    }
+                }
             });
         });
 
@@ -651,6 +713,9 @@
                     </div>
                 `).appendTo($(checkoutAlert));
 
+                if(!(jQuery.isEmptyObject(data.location))){
+                    $('#input-checkout_location').val(`${data.location.value}${data.location.is_default ? ' - Default' : ''}`);
+                }
                 // Update Data
                 $("#modalCheckOut").attr('action', `{{ route('system.attendance.index') }}/${data.uuid}`);
                 $('#input-checkout_date').data('daterangepicker').setStartDate(moment(data.date).format('DD/MM/YYYY'));

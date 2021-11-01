@@ -156,6 +156,7 @@
         @include('layouts.partials.plugins.overlayscrollbar-js')
         
         <script>
+            var ajaxAlert = true;
             var ajax_timer = null;
             $.ajaxSetup({
                 headers: {
@@ -196,31 +197,34 @@
                     // console.log("Ajax Fail Global");
                     // console.log(jqXHR);
 
-                    Swal.fire({
-                        title: "Ada sesuatu yang bermasalah",
-                        text: "Mohon hubungi admin jika error ini terjadi berulang!",
-                        icon: 'warning',
-                        showCancelButton: true,
-                        confirmButtonText: 'Segarkan Halaman!',
-                        cancelButtonText: 'Tutup!',
-                        reverseButtons: true,
-                    }).then((result) => {
-                        if (result.value) {
-                            Swal.fire({
-                                title: "Halaman ini akan disegarkan!",
-                                text: "Semua data yang belum disimpan akan diabaikan!",
-                                icon: 'warning',
-                                showCancelButton: true,
-                                confirmButtonText: 'Tetap Segarkan Halaman!',
-                                cancelButtonText: 'Batalkan!',
-                                reverseButtons: true,
-                            }).then((result) => {
-                                if (result.value) {
-                                    location.reload();
-                                }
-                            });
-                        }
-                    });
+                    console.log(ajaxAlert);
+                    if(ajaxAlert){
+                        Swal.fire({
+                            title: "Ada sesuatu yang bermasalah",
+                            text: "Mohon hubungi admin jika error ini terjadi berulang!",
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonText: 'Segarkan Halaman!',
+                            cancelButtonText: 'Tutup!',
+                            reverseButtons: true,
+                        }).then((result) => {
+                            if (result.value) {
+                                Swal.fire({
+                                    title: "Halaman ini akan disegarkan!",
+                                    text: "Semua data yang belum disimpan akan diabaikan!",
+                                    icon: 'warning',
+                                    showCancelButton: true,
+                                    confirmButtonText: 'Tetap Segarkan Halaman!',
+                                    cancelButtonText: 'Batalkan!',
+                                    reverseButtons: true,
+                                }).then((result) => {
+                                    if (result.value) {
+                                        location.reload();
+                                    }
+                                });
+                            }
+                        });
+                    }
                 },
             });
             

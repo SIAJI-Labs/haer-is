@@ -42,6 +42,7 @@ Route::group([
     Route::resource('attendance', \App\Http\Controllers\System\AttendanceController::class);
 
     // Profile
+    Route::resource('profile-preference', \App\Http\Controllers\System\ProfilePreferenceController::class);
     Route::resource('profile', \App\Http\Controllers\System\ProfileController::class);
 
     // Json
@@ -60,6 +61,15 @@ Route::group([
         ], function(){
             Route::get('attendance', [\App\Http\Controllers\System\AttendanceController::class, 'datatableAll'])->name('attendance.all');
             Route::get('task', [\App\Http\Controllers\System\TaskController::class, 'datatableAll'])->name('task.all');
+        });
+
+        // Select2
+        Route::group([
+            'prefix' => 'select2',
+            'as' => 'select2.'
+        ], function(){
+            // User Preference / Location
+            Route::get('user-preference', [\App\Http\Controllers\System\ProfilePreferenceController::class, 'select2'])->name('user-preference.select2');
         });
     });
 });

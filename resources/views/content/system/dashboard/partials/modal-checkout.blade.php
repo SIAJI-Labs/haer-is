@@ -14,6 +14,12 @@
                 <div id="checkout-alert"></div>
 
                 <div class="form-group row">
+                    <label for="input-checkout_date" class="col-sm-3 col-form-label">Lokasi</label>
+                    <div class="col-sm-9">
+                        <input type="text" class="form-control" id="input-checkout_location" name="location" placeholder="Lokasi" readonly>
+                    </div>
+                </div>
+                <div class="form-group row">
                     <label for="input-checkout_date" class="col-sm-3 col-form-label">Tanggal</label>
                     <div class="col-sm-9">
                         <input type="text" class="form-control input-date" id="input-checkout_date" name="date" placeholder="Tanggal Kepulangan" readonly>

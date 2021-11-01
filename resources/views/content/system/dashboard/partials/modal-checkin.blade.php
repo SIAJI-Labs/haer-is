@@ -11,6 +11,20 @@
             </div>
             <div class="modal-body">
                 <div class="form-group row">
+                    <label for="input-checkin_date" class="col-sm-3 col-form-label">Lokasi</label>
+                    <div class="col-sm-9">
+                        {{-- <input type="text" class="form-control input-date" id="input-checkin_date" name="date" placeholder="Tanggal Kehadiran" readonly> --}}
+                        <select class="form-control @error('location') is-invalid @enderror" id="input-location" name="location">
+                            @php
+                                $defaultLocation = \Auth::user()->userPreference()->where('key', 'location')->where('is_default', true)->first();
+                            @endphp
+                            @if (!empty($defaultLocation))
+                                <option value="{{ $defaultLocation->uuid }}">{{ $defaultLocation->value }} - Default</option>
+                            @endif
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group row">
                     <label for="input-checkin_date" class="col-sm-3 col-form-label">Tanggal</label>
                     <div class="col-sm-9">
                         <input type="text" class="form-control input-date" id="input-checkin_date" name="date" placeholder="Tanggal Kehadiran" readonly>
@@ -81,7 +95,7 @@
             </div>
             <div class="modal-footer justify-content-between">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                <button type="submit" class="btn tw__bg-blue-400">Submit</button>
+                <button type="submit" class="btn btn-primary">Submit</button>
             </div>
         </div>
     <!-- /.modal-content -->

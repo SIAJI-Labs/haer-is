@@ -17,6 +17,7 @@ class Attendance extends Model
      */
     protected $fillable = [
         'user_id',
+        'location',
         'date',
         'checkin_time',
         'checkout_time',
@@ -73,6 +74,10 @@ class Attendance extends Model
     public function user()
     {
         return $this->belongsTo(\App\Models\User::class, 'user_id');
+    }
+    public function location()
+    {
+        return $this->belongsTo(\App\Models\UserPreference::class, 'location');
     }
 
     /**

@@ -79,8 +79,17 @@ class AttendanceController extends Controller
         ]);
 
         \DB::transaction(function () use ($request) {
+            $location = null;
+            if($request->has('location') && $request->location != ''){
+                $location = \App\Models\UserPreference::where('user_id', \Auth::user()->id)
+                    ->where('uuid', $request->location)
+                    ->firstOrFail()
+                    ->id;
+            }
+
             $attendance = $this->attendanceModel;
             $attendance->user_id = \Auth::user()->id;
+            $attendance->location = $location;
             $attendance->date = date("Y-m-d", strtotime($request->date));
             $attendance->checkin_time = $request->time.':00';
             // $attendance->notes = $request;
@@ -141,7 +150,7 @@ class AttendanceController extends Controller
     public function show($id)
     {
         $data = $this->attendanceModel
-            ->with('attendanceTask', 'attendanceTask.task')
+            ->with('attendanceTask', 'attendanceTask.task', 'location')
             ->where('uuid', $id)
             ->firstOrFail();
 
@@ -387,7 +396,7 @@ class AttendanceController extends Controller
         }
 
         return datatables()
-            ->of($data->orderBy('date', 'desc')->withCount('attendanceTask', 'attendancePause')->with('user', 'attendanceTask', 'attendanceTask.task'))
+            ->of($data->orderBy('date', 'desc')->withCount('attendanceTask', 'attendancePause')->with('user', 'attendanceTask', 'attendanceTask.task', 'location'))
             ->toJson();
     }
 }

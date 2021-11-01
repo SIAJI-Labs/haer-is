@@ -44,6 +44,10 @@ function whatsappFormat(data, task)
     if(data.type == 'check-out'){
         formatedType = 'Check-Out';
     }
+    let location = '-';
+    if(data.location != ''){
+        location = data.location;
+    }
 
     template += `*${formatedType}*`;
     template += `%0A${data.name} | ${data.date} | ${data.time}`;
@@ -51,7 +55,7 @@ function whatsappFormat(data, task)
     task.forEach((data, row) => {
         template += `%0A- ${data.progress > 0 ? '['+data.progress+'%] ' : ''}${data.name}`;
     });
-    template += `%0ALocation: `;
+    template += `%0ALocation: ${data.location}`;
     return template;
 }
 
