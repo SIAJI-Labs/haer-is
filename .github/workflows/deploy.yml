@@ -1,0 +1,25 @@
+name: Github Action CI/CD for Deployment
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    name: Build Laravel App
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cloning Repo
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            whoami
+            pwd
+            echo "========= Github Action for Pulling Data"
+            cd ~/public_html/haer-is/main-apps
+            ls -l
