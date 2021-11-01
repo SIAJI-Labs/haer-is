@@ -1,4 +1,4 @@
-name: Github Action CI/CD for Deployment
+name: Github Action (CI/CD) for Deployment
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    name: Build Laravel App
+    name: Build App
     runs-on: ubuntu-latest
     steps:
       - name: Cloning Repo
@@ -22,4 +22,33 @@ jobs:
             pwd
             echo "========= Github Action for Pulling Data"
             cd ~/public_html/haer-is/main-apps
-            ls -l
+            git checkout master
+            git reset --hard
+            git pull origin master
+            # Copy Remote .env
+            cp .env.remote .env
+  deploy:
+    name: Deploy App
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Github Action via SSH (to Hosting)
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            whoami
+            pwd
+            echo "========= Sync Public Directory (Except index.php)"
+            cd ~/public_html/haer-is
+            rm -rf assets css js mix-manifest.json
+            cd ~/public_html/haer-is/main-apps
+            shopt -s extglob
+            mv ~/public_html/haer-is/main-apps/public/!(index.php|images) ~/public_html/haer-is
+            echo "========= Clear Laravel Cache"
+            php artisan config:clear
+            php artisan cache:clear
+            php artisan view:clear
