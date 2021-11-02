@@ -160,9 +160,10 @@
             var ajax_timer = null;
             $.ajaxSetup({
                 headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
                 },
                 beforeSend: () => {
+                    // console.log("Ajax is being sent");
                     // show loading dialog // works
                     if(ajax_timer){
                         clearTimeout(ajax_timer)
@@ -182,6 +183,25 @@
                     // console.log(ajax_timer);
                 },
                 complete: (xhr, stat) => {
+                    // console.log("Ajax is completed");
+                    // console.log(xhr);
+                    // console.log(stat);
+                    
+                    let response = xhr.responseJSON;
+                    if(!(jQuery.isEmptyObject(response.datatable))){
+                        let datatableMessage = (response.datatable.message).toLowerCase();
+                        if(datatableMessage.includes('unauthenticated')){
+                            Swal.fire({
+                                title: "Sesi Habis",
+                                text: "Sesi anda telah habis, mohon untuk melakukan login kembali!",
+                                icon: 'warning',
+                                confirmButtonText: 'Login Kembali!',
+                                reverseButtons: true,
+                            }).then((result) => {
+                                location.href = "{{ route('public.login') }}";
+                            });
+                        }
+                    }
                     // hide dialog // works
                     $('.ajax-toast').fadeOut('300', (e) => {
                         setTimeout((e) => {
@@ -196,8 +216,8 @@
                 error: (jqXHR, textStatus, errorThrown) => {
                     // console.log("Ajax Fail Global");
                     // console.log(jqXHR);
+                    // console.log(ajaxAlert);
 
-                    console.log(ajaxAlert);
                     if(ajaxAlert){
                         Swal.fire({
                             title: "Ada sesuatu yang bermasalah",
@@ -229,7 +249,7 @@
             });
             
             function resend_link(){
-                console.log("Resend Link is running...");
+                // console.log("Resend Link is running...");
             }
             function formReset(){
                 Swal.fire({

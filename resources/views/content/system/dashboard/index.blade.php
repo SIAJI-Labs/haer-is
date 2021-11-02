@@ -36,7 +36,7 @@
 @section('content')
 <section id="dashboard">
     <div class="row">
-        <div class="col-12 col-lg-5 d-flex align-items-stretch">
+        <div class="col-12 col-lg-3 d-flex align-items-stretch">
             <div class="card tw__w-full">
                 <div class="card-header">
                     <h3 class="card-title">Waktu Sekarang</h3>
@@ -53,7 +53,7 @@
         @php
             $activeAttendance = \Auth::user()->getActiveAttendace();
         @endphp
-        <div class="col-12 col-lg-7 d-flex align-items-stretch">
+        <div class="col-12 col-lg-9 d-flex align-items-stretch">
             <div class="card tw__w-full">
                 <div class="card-header">
                     <h3 class="card-title">Kehadiran{{ !empty($activeAttendance) ? ' - '.date("d/m/Y", strtotime($activeAttendance->date)) : '' }}</h3>
@@ -74,12 +74,17 @@
                     @endphp
                     
                     <div class="row">
-                        <div class="col-12 col-lg-4 tw__mb-4 lg:tw__mb-0">
-                            <div class="tw__bg-{{ !empty($activeAttendance) && !empty($activeAttendance->checkout_time) ? 'blue' : 'gray' }}-200 tw__rounded tw__h-full tw__w-full tw__flex tw__items-center tw__justify-center tw__flex-col tw__p-4" id="time-work">
+                        <div class="col-12 col-lg-5 tw__mb-4 lg:tw__mb-0">
+                            <div class="tw__bg-{{ !empty($activeAttendance) && !empty($activeAttendance->checkout_time) ? 'blue' : (!empty($getPaused) ? 'yellow' : 'gray') }}-200 tw__rounded tw__h-full tw__w-full tw__flex tw__items-center tw__justify-center tw__flex-col tw__p-4" id="time-work">
                                 @if (!empty($activeAttendance) && empty($activeAttendance->checkout_time))
                                     <div id="work-time" class="text-center">
-                                        <h3 class="time mb-0 tw__block">HH:mm:ss</h3>
-                                        <small>Waktu Bekerja{{ !empty($getPaused) ? ' - Timer dihentikan' : '' }}</small>
+                                        @if (!empty($getPaused))
+                                            <h3 class="time mb-0 tw__block" data-time="{{ date('m/d/Y H:i:s', strtotime($activeAttendance->date.' '.$getPaused->start)) }}">HH:mm:ss</h3>
+                                            <small>Waktu dihentikan sejak <u><span class="time-pause">HH:mm</span> WIB</u></small>
+                                        @else
+                                            <h3 class="time mb-0 tw__block" data-time="{{ date('m/d/Y H:i:s', strtotime($activeAttendance->date.' '.$activeAttendance->checkin_time.' +'.$pausedAccumulation.' minutes')) }}">HH:mm:ss</h3>
+                                            <small>Waktu Bekerja</small>
+                                        @endif
                                         <br/>
                                         <small>Check-in dilakukan pada <u>{{ $activeAttendance->checkin_time }} WIB</u></small>
                                     </div>
@@ -90,7 +95,7 @@
                                 @endif
                             </div>
                         </div>
-                        <div class="col-12 col-lg-8">
+                        <div class="col-12 col-lg-7">
                             <button type="button" class="btn d-block w-100 tw__mb-1 btn-primary" @if(!empty($activeAttendance)) disabled @else data-toggle="modal" data-target="#modalCheckIn" @endif>Check-in</button>
 
                             @if (!empty($getPaused))
@@ -118,15 +123,15 @@
                 </div>
                 <div class="card-body">
                     <div class="row">
-                        <div class="col-12 col-lg-6">
+                        <div class="col-12 col-lg-6 form-group">
                             <label>Tahun</label>
                             <select class="form-control" id="input_filter-year">
-                                @for ($i = date("Y"); $i >= date("Y", strtotime('2015-01-01')); $i--)
+                                @for ($i = date("Y"); $i >= date("Y", strtotime('2021-01-01')); $i--)
                                     <option value="{{ $i }}">{{ $i }}</option>
                                 @endfor
                             </select>
                         </div>
-                        <div class="col-12 col-lg-6">
+                        <div class="col-12 col-lg-6 form-group">
                             <label>Bulan</label>
                             <select class="form-control" id="input_filter-month">
                                 @for ($i = 12; $i >= date("m", strtotime(date("Y").'-01-01')); $i--)
@@ -166,6 +171,9 @@
 
     {{-- New Task Modal --}}
     @include('content.system.dashboard.partials.modal-newTask')
+
+    {{-- Detail Modal --}}
+    @include('content.system.dashboard.partials.modal-detail')
 @endsection
 
 @section('js_plugins')
@@ -560,14 +568,14 @@
                             let formatedNow = moment(now).format("DD/MM/YYYY");
                             let formatedCurr = moment(currData).format("DD/MM/YYYY");
                             if(formatedNow === formatedCurr){
-                                button.push(`<button type="button" class="btn btn-sm btn-primary" onclick="newTask('${data.uuid}', '${data.date}')">Tambah Task</button>`);
+                                button.push(`<button type="button" class="btn btn-sm btn-info" onclick="newTask('${data.uuid}', '${data.date}')">Tambah Task</button>`);
                             }
-
                             if(formatedCurr < formatedNow && data.checkout_time == null){
-                                button.push(`<button type="button" class="btn btn-sm tw__bg-pink-400 tw__text-white" onclick="checkOut('${data.uuid}')">Check-out</button>`);
+                                button.push(`<button type="button" class="btn btn-sm btn-warning" onclick="checkOut('${data.uuid}')">Check-out</button>`);
                             }
+                            button.push(`<button type="button" class="btn btn-sm btn-primary" onclick="attendanceDetail('${data.uuid}')">Detail</button>`);
 
-                            return jQuery.isEmptyObject(button) ? `-` : button.join('');
+                            return jQuery.isEmptyObject(button) ? `-` : `<div class="btn-group">${button.join('')}</div>`;
                         }
                     }
                 ]
@@ -760,6 +768,52 @@
                 });
             });
         }
+        function attendanceDetail(uuid){
+            $.get(`{{ route('system.json.attendance.index') }}/${uuid}`, (result) => {
+                let data = result.data;
+                let now = new Date();
+                console.log(now.toDateString());
+                let rawDate = new Date(moment(data.date));
+                console.log(rawDate.toDateString());
+
+                let workDuration = 0;
+                let workTime = [];
+                workTime.push(`Check-in: ${data.checkin_time} WIB`);
+                if(data.checkout_time != null){
+                    workTime.push(`Check-out: ${data.checkout_time} WIB`);
+                }
+
+                $("#modalDetail .date").text(`${convertMomentJsToIndonesia(rawDate, 'days')}, ${moment(rawDate).format('DD')} ${convertMomentJsToIndonesia(rawDate, 'months')} ${moment(rawDate).format('YYYY')}`);
+                $("#modalDetail .work-time").text(workTime.join(' / '));
+                $("#modalDetail .pause-time").text(`${data.pauseAccumulation} menit`);
+                $("#modalDetail .location").text(!(jQuery.isEmptyObject(data.location)) ? data.location.value : '-');
+
+                if(!(jQuery.isEmptyObject(data.attendance_task))){
+                    let task = [];
+                    (data.attendance_task).forEach((data, row) => {
+                        task.push(`
+                            <li class="list-group-item">
+                                <span>${data.task.name}</span>
+                                
+                                <div class="tw__mt-2">
+                                    <small>Progress from ${data.progress_start} to ${data.progress_end ?? '-'}</small>
+                                    <div class="progress">
+                                        <div class="progress-bar" role="progressbar" style="width: ${data.progress_end ?? data.progress_start}%;" aria-valuenow="${data.progress_end ?? data.progress_start}" aria-valuemin="0" aria-valuemax="100">${data.progress_end ?? data.progress_start}%</div>
+                                    </div>
+                                </div>
+                            </li>
+                        `);
+
+                        $(task.join('')).appendTo($("#modalDetail #taskList"));
+                    });
+                } else {
+                    $("#modalDetail #taskList").empty();
+                }
+                setTimeout((e) => {
+                    $("#modalDetail").modal('show');
+                });
+            });
+        }
 
         $("#modalCheckIn").submit((e) => {
             e.preventDefault();
@@ -771,8 +825,16 @@
                 selectedId.push(data);
             });
 
-            $.post(targetUrl, ($(e.target).serialize())+`&validate=${selectedId}`, (result) => {
-                location.reload();
+            $.post(targetUrl, ($(e.target).serialize()+`&validate=${selectedId.join(',')}`), (result) => {
+                Swal.fire({
+                    title: "Aksi Berhasil",
+                    text: result.message,
+                    icon: 'success',
+                    confirmButtonText: 'Tutup Pesan!',
+                    reverseButtons: true,
+                }).then((result) => {
+                    location.reload();
+                });
                 // console.log(result);
             });
         });
@@ -801,7 +863,15 @@
             let targetUrl = $(e.target).attr('action');
 
             $.post(targetUrl, ($(e.target).serialize()), (result) => {
-                location.reload();
+                Swal.fire({
+                    title: "Aksi Berhasil",
+                    text: result.message,
+                    icon: 'success',
+                    confirmButtonText: 'Tutup Pesan!',
+                    reverseButtons: true,
+                }).then((result) => {
+                    location.reload();
+                });
                 // console.log(result);
             });
         });
@@ -830,7 +900,15 @@
             let targetUrl = $(e.target).attr('action');
 
             $.post(targetUrl, $(e.target).serialize(), (result) => {
-                location.reload();
+                Swal.fire({
+                    title: "Aksi Berhasil",
+                    text: result.message,
+                    icon: 'success',
+                    confirmButtonText: 'Tutup Pesan!',
+                    reverseButtons: true,
+                }).then((result) => {
+                    location.reload();
+                });
             });
         });
 
@@ -839,7 +917,15 @@
             let targetUrl = $(e.target).attr('action');
 
             $.post(targetUrl, $(e.target).serialize(), (result) => {
-                location.reload();
+                Swal.fire({
+                    title: "Aksi Berhasil",
+                    text: result.message,
+                    icon: 'success',
+                    confirmButtonText: 'Tutup Pesan!',
+                    reverseButtons: true,
+                }).then((result) => {
+                    location.reload();
+                });
             });
         });
     </script>
@@ -848,15 +934,18 @@
         <script>
             function displayWorkTime()
             {
-                let extraTime = "{{ $pausedAccumulation }}";
-                let parse = Date.parse("{{ date('m/d/Y H:i:s', strtotime($activeAttendance->date.' '.$activeAttendance->checkin_time)) }}");
-                let startWork = new Date(parse + ({{ $pausedAccumulation }} * 60000));
+                let startTime = $("#work-time .time").attr('data-time');
+                // let parse = Date.parse("{{ date('m/d/Y H:i:s', strtotime($activeAttendance->date.' '.$activeAttendance->checkin_time)) }}");
+                // let startWork = new Date(parse + ({{ $pausedAccumulation }} * 60000));
+
+                let parse = Date.parse(startTime);
+                let startWork = new Date(parse);
                 @if(!empty($getPaused))
                     let parsePaused = Date.parse("{{ date('m/d/Y H:i:s', strtotime($activeAttendance->date.' '.$getPaused->start)) }}");
-                    let now = new Date(parsePaused);
-                @else
-                    let now = new Date();
+                    $("#work-time .time-pause").text(moment(parsePaused).format('HH:mm'));
                 @endif
+
+                let now = new Date();
 
                 // get total seconds between the times
                 var delta = Math.abs(now - startWork) / 1000;

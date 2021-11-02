@@ -57,6 +57,7 @@ class AttendanceController extends Controller
             $validateProgress = ['nullable', 'numeric', 'digits_between:0,100'];
             $validateName = ['nullable', 'string', 'max:191'];
         }
+
         $request->validate([
             'date' => ['required', 'string'],
             'time' => ['required', 'string'],
@@ -137,7 +138,7 @@ class AttendanceController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'message' => 'Data berhasil disimpan!',
+            'message' => 'Check-in kehadiran berhasil dilakukan!',
         ]);
     }
 
@@ -153,6 +154,7 @@ class AttendanceController extends Controller
             ->with('attendanceTask', 'attendanceTask.task', 'location')
             ->where('uuid', $id)
             ->firstOrFail();
+        $data->pauseAccumulation = $data->attendancePause()->whereNotNull('duration')->sum('duration');
 
         return response()->json([
             'status' => 'success',
@@ -248,7 +250,7 @@ class AttendanceController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'message' => 'Data berhasil diperbaharui!',
+            'message' => 'Check-out kehadiran berhasil dilakukan!',
         ]);
     }
 
@@ -272,6 +274,11 @@ class AttendanceController extends Controller
             'reason.max' => 'Nilai pada Field Alasan maksimal 191 karakter!',
         ]);
 
+        $message = 'Timer berhasil dihentikan untuk sementara!';
+        if($request->has('pause_id') && $request->pause_id != ''){
+            $message = 'Timer berhasil dilanjutkan!';
+        }
+
         \DB::transaction(function () use ($request, $id) {
             $attendance = $this->attendanceModel->where('uuid', $id)->firstOrFail();
             
@@ -288,8 +295,14 @@ class AttendanceController extends Controller
                 $end = date_create($pauseData->end);
                 $differenceInHours = date_diff($end, $start);
 
-                $differenceInMinutes = $differenceInHours->m * 60;
+                $differenceInMinutes = $differenceInHours->h * 60;
                 $differenceInMinutes += $differenceInHours->i;
+
+                \Log::debug("Debug on Pause Duration", [
+                    'start' => $start,
+                    'end' => $end,
+                    'difference' => $differenceInHours
+                ]);
 
                 $pauseData->duration = $differenceInMinutes;
             } else {
@@ -303,7 +316,7 @@ class AttendanceController extends Controller
         
         return response()->json([
             'status' => 'success',
-            'message' => 'Data berhasil diperbaharui'
+            'message' => $message
         ]);
     }
 
