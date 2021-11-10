@@ -40,7 +40,7 @@
                         <h3 class="card-title">Task Activity</h3>
                     </div>
                     <div class="card-body">
-                        <table class="table table-hover table-striped table-bordered">
+                        <table class="table table-hover table-striped table-bordered mb-4">
                             <tr>
                                 <th>Jumlah Task</th>
                                 <td>

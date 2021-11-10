@@ -804,9 +804,9 @@
                                 </div>
                             </li>
                         `);
-
-                        $(task.join('')).appendTo($("#modalDetail #taskList"));
                     });
+                    
+                    $(task.join('')).appendTo($("#modalDetail #taskList"));
                 }
                 $("#modalDetail .task-count").text(task.length);
 
