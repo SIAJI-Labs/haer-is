@@ -35,8 +35,24 @@
                     </tr>
                 </table>
 
-                <ul class="list-group" id="taskList">
-                </ul>
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Task Activity</h3>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-hover table-striped table-bordered">
+                            <tr>
+                                <th>Jumlah Task</th>
+                                <td>
+                                    <span class="task-count"></span>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <ul class="list-group" id="taskList">
+                        </ul>
+                    </div>
+                </div>
             </div>
             <div class="modal-footer justify-content-between">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>

@@ -567,7 +567,7 @@
 
                             let formatedNow = moment(now).format("DD/MM/YYYY");
                             let formatedCurr = moment(currData).format("DD/MM/YYYY");
-                            if(formatedNow === formatedCurr){
+                            if(formatedNow === formatedCurr && data.checkout_time == null){
                                 button.push(`<button type="button" class="btn btn-sm btn-info" onclick="newTask('${data.uuid}', '${data.date}')">Tambah Task</button>`);
                             }
                             if(formatedCurr < formatedNow && data.checkout_time == null){
@@ -788,8 +788,9 @@
                 $("#modalDetail .pause-time").text(`${data.pauseAccumulation} menit`);
                 $("#modalDetail .location").text(!(jQuery.isEmptyObject(data.location)) ? data.location.value : '-');
 
+                $("#modalDetail #taskList").empty();
+                let task = [];
                 if(!(jQuery.isEmptyObject(data.attendance_task))){
-                    let task = [];
                     (data.attendance_task).forEach((data, row) => {
                         task.push(`
                             <li class="list-group-item">
@@ -806,9 +807,9 @@
 
                         $(task.join('')).appendTo($("#modalDetail #taskList"));
                     });
-                } else {
-                    $("#modalDetail #taskList").empty();
                 }
+                $("#modalDetail .task-count").text(task.length);
+
                 setTimeout((e) => {
                     $("#modalDetail").modal('show');
                 });
