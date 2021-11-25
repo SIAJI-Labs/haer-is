@@ -48,6 +48,17 @@ jobs:
             cd ~/public_html/haer-is/main-apps
             shopt -s extglob
             mv ~/public_html/haer-is/main-apps/public/!(index.php|images) ~/public_html/haer-is
+      - name: Cleaning Cache, etc
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            whoami
+            pwd
+            cd ~/public_html/haer-is/main-apps
             echo "========= Clear Laravel Cache"
             php artisan config:clear
             php artisan cache:clear
