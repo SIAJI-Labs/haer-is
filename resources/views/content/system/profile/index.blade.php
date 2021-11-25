@@ -87,7 +87,7 @@
                                         <div class="row">
                                             <div class="col-12 col-md-3">
                                                 <div class="img-preview mb-2">
-                                                    <select class="form-control select2" id="input-avatar_style" name="avatar_style">
+                                                    <select class="form-control input-select2" id="input-avatar_style" name="avatar_style">
                                                         @if (config('custom.avatar'))
                                                             @foreach (config('custom.avatar') as $item)
                                                                 <option value="{{ $item }}" {{ empty(\Auth::user()->avatar_style) ? ($item == 'initials' ? 'selected' : '') : ($item == \Auth::user()->avatar_style ? 'selected' : '') }}>{{ $item }}</option>
@@ -333,7 +333,7 @@
                     }
                 }
             });
-            $(".select2").select2({
+            $(".input-select2").select2({
                 theme: 'bootstrap4',
                 placeholder: 'Cari Kata kunci',
             });
