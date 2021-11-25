@@ -209,21 +209,19 @@
     <script>
         var locationStart = 1;
         const validateLocationDefault = () => {
-            $(".location-is_default").change((e) => {
-                let checked = $(".location-is_default:checked").length;
-                
-                if(checked > 0){
-                    setTimeout((e) => {
-                        $(".location-is_default").each((row, data) => {
-                            if(!($(data).is(':checked'))){
-                                $(data).attr('disabled', true);
-                            }
-                        });
+            let checked = $(".location-is_default:checked").length;
+            console.log(checked);
+            if(checked > 0){
+                setTimeout((e) => {
+                    $(".location-is_default").each((row, data) => {
+                        if(!($(data).is(':checked'))){
+                            $(data).attr('disabled', true);
+                        }
                     });
-                } else {
-                    $('.location-is_default').attr('disabled', false);
-                }
-            });
+                });
+            } else {
+                $('.location-is_default').attr('disabled', false);
+            }
         }
         const addMoreLocation = () => {
             let locationContent = $("#locationContent");
@@ -252,12 +250,25 @@
                 $(template).appendTo($(locationContent));
                 locationStart++;
                 setTimeout(() => {
+                    changeLocationDefault();
                     validateLocationDefault();
                 }, 0);
             });
             $(locationContent).on('click', '.location-remove', (e) => {
                 const item = $(e.target).closest('.form-group');
                 $(item).remove();
+
+                setTimeout(() => {
+                    validateLocationDefault();
+                }, 0);
+            });
+        }
+        const changeLocationDefault = () => {
+            $(".location-is_default").change((e) => {
+                console.log($(e.target));
+                setTimeout(() => {
+                    validateLocationDefault();
+                }, 0);
             });
         }
 
@@ -273,6 +284,7 @@
         $(document).ready((e) => {
             validateLocationDefault();
             addMoreLocation();
+            changeLocationDefault();
 
             $("#fakepassword").hide();
 
