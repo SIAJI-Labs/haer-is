@@ -158,7 +158,7 @@
                                     <div class="col-sm-10">
                                         <div class="row">
                                             <div class="col-12 col-lg-9">
-                                                <select class="form-control @error('location') is-invalid @enderror" id="input-location" name="location">
+                                                <select class="form-control @error('location') is-invalid @enderror" id="input-location" name="location" disabled>
                                                     @php
                                                         $defaultLocation = \Auth::user()->userPreference()->where('key', 'location')->where('is_default', true)->first();
                                                     @endphp
