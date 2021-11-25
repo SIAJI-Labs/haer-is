@@ -31,7 +31,7 @@
             <div class="card card-primary card-outline">
                 <div class="card-body box-profile">
                     <div class="text-center">
-                        <img class="profile-user-img img-fluid img-circle tw__bg-white" src="{{ getAvatar(\Auth::user()->name, \Auth::user()->avatar_style) }}" alt="User profile picture">
+                        <img class="profile-user-img img-fluid img-circle tw__bg-white" src="{{ getAvatar(\Auth::user()->name, \Auth::user()->avatar_style ?? 'initials') }}" alt="User profile picture">
                     </div>
                     <h3 class="profile-username text-center">{{ \Auth::user()->name }}</h3>
                 </div>
@@ -95,7 +95,7 @@
                                                         @endif
                                                     </select>
                                                     
-                                                    <img class="img-responsive tw__mt-2" id="avatar-preview" width="100%;" style="padding:.25rem;background:#eee;display:block;" src="{{ getAvatar(\Auth::user()->name, \Auth::user()->avatar_style) }}">
+                                                    <img class="img-responsive tw__mt-2" id="avatar-preview" width="100%;" style="padding:.25rem;background:#eee;display:block;" src="{{ getAvatar(\Auth::user()->name, \Auth::user()->avatar_style ?? 'initials') }}">
                                                 </div>
                                             </div>
                                             {{-- <div class="col-12 col-md-9">
