@@ -136,7 +136,9 @@ class ProfileController extends Controller
         $data->name = $request->name;
         $data->email = $request->email;
         $data->username = $request->username;
+        $data->avatar_style = $request->avatar_style;
         $data->save();
+        
         return redirect()->route('system.profile.index')->with([
             'status' => 'success',
             'message' => 'Berhasil memperbaharui data Profile'

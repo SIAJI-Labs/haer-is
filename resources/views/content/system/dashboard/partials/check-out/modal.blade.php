@@ -2,7 +2,7 @@
     @csrf
     @method('PUT')
 
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header">
                 <h4 class="modal-title">Check-out Kehadiran</h4>
@@ -12,6 +12,10 @@
             </div>
             <div class="modal-body">
                 <div id="checkout-alert"></div>
+
+                <div class="form-group">
+                    <input type="hidden" name="added_on" value="check-out" readonly>
+                </div>
 
                 <div class="form-group row">
                     <label for="input-checkout_date" class="col-sm-3 col-form-label">Lokasi</label>
@@ -48,16 +52,16 @@
                                     <th>Judul</th>
                                 </tr>
                             </thead>
-                            <tbody id="activityContentCheckout">
-                                @php
-                                    $activityCheckoutStart = 0;
-                                @endphp
-                                @if ($activeAttendance)
-                                    @foreach ($activeAttendance->attendanceTask as $key =>  $item)
+                            @php
+                                $activityCheckoutStart = 0;
+                            @endphp
+                            @if ($activeAttendance)
+                                @foreach ($activeAttendance->attendanceTask as $key =>  $item)
+                                    <tbody>
                                         <tr>
-                                            <td class="align-middle tw__text-center">
+                                            <td class="align-middle tw__text-center" rowspan="2">
                                                 <input type="hidden" name="task[{{ $key }}][validate]" value="{{ $item->id }}" readonly>
-
+    
                                                 <div class="custom-control custom-checkbox">
                                                     <input class="custom-control-input" type="checkbox" id="input_{{ $key }}-checkout_included" name="task[{{ $key }}][include]" checked="" onclick="return false;">
                                                     <label for="input_0-checkout_included" class="custom-control-label"></label>
@@ -70,17 +74,24 @@
                                                 <input type="text" name="task[{{ $key }}][name]" class="form-control" id="input_{{ $key }}-checkout_name" value="{{ $item->task->name }}" placeholder="Judul Aktivitas" readonly>
                                             </td>
                                         </tr>
+                                        <tr>
+                                            <td colspan="2">
+                                                <textarea class="form-control" id="input_{{ $key }}-checkout_note" name="task[{{ $key }}][note]" placeholder="Catatan Aktivitas (Opsional)">{!! $item->task->notes !!}</textarea>
+                                            </td>
+                                        </tr>
+                                    </tbody>
 
-                                        @php
-                                            $activityCheckoutStart++;
-                                        @endphp
-                                    @endforeach
-                                @else
                                     @php
-                                        $activityCheckoutStart = 1;
+                                        $activityCheckoutStart++;
                                     @endphp
+                                @endforeach
+                            @else
+                                @php
+                                    $activityCheckoutStart = 1;
+                                @endphp
+                                <tbody>
                                     <tr>
-                                        <td class="align-middle tw__text-center">
+                                        <td class="align-middle tw__text-center" rowspan="2">
                                             <div class="custom-control custom-checkbox">
                                                 <input class="custom-control-input" type="checkbox" id="input_0-checkout_included" name="task[0][include]" checked="" onclick="return false;">
                                                 <label for="input_0-checkout_included" class="custom-control-label"></label>
@@ -93,8 +104,13 @@
                                             <input type="text" name="task[0][name]" class="form-control" id="input_0-checkout_name" placeholder="Judul Aktivitas">
                                         </td>
                                     </tr>
-                                @endif
-                            </tbody>
+                                    <tr>
+                                        <td colspan="2">
+                                            <textarea class="form-control" id="input_0-checkout_note" name="task[0][note]" placeholder="Catatan Aktivitas (Opsional)"></textarea>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            @endif
                             <tfoot>
                                 <tr>
                                     <td colspan="3">

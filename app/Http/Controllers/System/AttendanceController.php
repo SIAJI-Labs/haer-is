@@ -101,17 +101,26 @@ class AttendanceController extends Controller
             foreach($request->task as $key => $taskRequest){
                 if(($taskRequest['name'] != "" && $taskRequest['name'] != null) && ($taskRequest['progress'] != "" && $taskRequest['progress'] != null)){
                     // Create new Task
+                    $notes = null;
+                    if(isset($taskRequest['note'])){
+                        $notes = $taskRequest['note'];
+                    }
                     $taskData = $this->taskModel->create([
                         'user_id' => \Auth::user()->id,
                         'progress' => $taskRequest['progress'],
                         'name' => $taskRequest['name'],
-                        'notes' => null
+                        'notes' => $notes
                     ]);
 
+                    $addedOn = null;
+                    if($request->has('added_on')){
+                        $addedOn = $request->added_on;
+                    }
                     $task[] = new $this->attendanceTaskModel([
                         'task_id' => $taskData->id,
                         'progress_start' => 0,
-                        'progress_end' => $taskData->progress
+                        'progress_end' => $taskData->progress,
+                        'added_on' => $addedOn
                     ]);
                 }
             }
@@ -123,10 +132,15 @@ class AttendanceController extends Controller
                     ->get();
                 if(count($taskDatas) > 0){
                     foreach($taskDatas as $taskData){
+                        $addedOn = null;
+                        if($request->has('added_on')){
+                            $addedOn = $request->added_on;
+                        }
                         $task[] = new $this->attendanceTaskModel([
                             'task_id' => $taskData->id,
                             'progress_start' => $taskData->progress,
-                            'progress_end' => $taskData->progress
+                            'progress_end' => $taskData->progress,
+                            'added_on' => $addedOn
                         ]);
                     }
                 }
@@ -225,19 +239,37 @@ class AttendanceController extends Controller
                     $taskData = $this->attendanceTaskModel->where('uuid', $taskRequest['validate'])->firstOrFail();
                     $taskData->progress_end = $taskRequest['progress'];
                     $taskData->save();
+
+                    // Update Task Note
+                    $notes = null;
+                    if(isset($taskRequest['note'])){
+                        $notes = $taskRequest['note'];
+                    }
+                    $realTask = $taskData->task;
+                    $realTask->notes = $notes;
+                    $realTask->save();
                 } else {
                     // Create new Task
+                    $notes = null;
+                    if(isset($taskRequest['note'])){
+                        $notes = $taskRequest['note'];
+                    }
                     $taskData = $this->taskModel->create([
                         'user_id' => \Auth::user()->id,
                         'progress' => $taskRequest['progress'],
                         'name' => $taskRequest['name'],
-                        'notes' => null
+                        'notes' => $notes
                     ]);
 
+                    $addedOn = null;
+                    if($request->has('added_on')){
+                        $addedOn = $request->added_on;
+                    }
                     $task[] = new $this->attendanceTaskModel([
                         'task_id' => $taskData->id,
                         'progress_start' => 0,
-                        'progress_end' => $taskRequest['progress']
+                        'progress_end' => $taskRequest['progress'],
+                        'added_on' => $addedOn
                     ]);
                 }
             }
@@ -352,17 +384,26 @@ class AttendanceController extends Controller
             foreach($request->task as $key => $taskRequest){
                 if(($taskRequest['name'] != "" && $taskRequest['name'] != null) && ($taskRequest['progress'] != "" && $taskRequest['progress'] != null)){
                     // Create new Task
+                    $notes = null;
+                    if(isset($taskRequest['note'])){
+                        $notes = $taskRequest['note'];
+                    }
                     $taskData = $this->taskModel->create([
                         'user_id' => \Auth::user()->id,
                         'progress' => $taskRequest['progress'],
                         'name' => $taskRequest['name'],
-                        'notes' => null
+                        'notes' => $notes
                     ]);
 
+                    $addedOn = null;
+                    if($request->has('added_on')){
+                        $addedOn = $request->added_on;
+                    }
                     $task[] = new $this->attendanceTaskModel([
                         'task_id' => $taskData->id,
                         'progress_start' => 0,
-                        'progress_end' => $taskData->progress
+                        'progress_end' => $taskData->progress,
+                        'added_on' => $addedOn
                     ]);
                 }
             }

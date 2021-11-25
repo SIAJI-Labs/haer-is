@@ -1,7 +1,7 @@
 <form class="modal fade" id="modalCheckIn" action="{{ route('system.attendance.store') }}" method="POST">
     @csrf
 
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header">
                 <h4 class="modal-title">Check-in Kehadiran</h4>
@@ -10,6 +10,10 @@
                 </button>
             </div>
             <div class="modal-body">
+                <div class="form-group">
+                    <input type="hidden" name="added_on" value="check-in" readonly>
+                </div>
+
                 <div class="form-group row">
                     <label for="input-checkin_date" class="col-sm-3 col-form-label">Lokasi</label>
                     <div class="col-sm-9">
@@ -55,7 +59,7 @@
                             </thead>
                         </table>
 
-                        <table class="table table-bordered table-hover table-striped tw__mt-4" id="activity-task">
+                        <table class="table table-bordered table-hover tw__mt-4" id="activity-task">
                             <thead>
                                 <tr>
                                     <th colspan="3" class="tw__text-center">Aktivitas Baru</th>
@@ -66,9 +70,9 @@
                                     <th>Judul</th>
                                 </tr>
                             </thead>
-                            <tbody id="activityContent">
+                            <tbody>
                                 <tr>
-                                    <td class="align-middle tw__text-center">
+                                    <td class="align-middle tw__text-center" rowspan="2">
                                         <div class="custom-control custom-checkbox">
                                             <input class="custom-control-input" type="checkbox" id="input_0-included" name="task[0][include]" checked="" onclick="return false;">
                                             <label for="input_0-included" class="custom-control-label"></label>
@@ -79,6 +83,11 @@
                                     </td>
                                     <td>
                                         <input type="text" name="task[0][name]" class="form-control" id="input_0-name" placeholder="Judul Aktivitas">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2">
+                                        <textarea class="form-control" id="input_0-note" name="task[0][note]" placeholder="Catatan Aktivitas (Opsional)"></textarea>
                                     </td>
                                 </tr>
                             </tbody>

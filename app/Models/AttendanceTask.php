@@ -19,7 +19,8 @@ class AttendanceTask extends Model
         'attendance_id',
         'task_id',
         'progress_start',
-        'progress_end'
+        'progress_end',
+        'added_on'
     ];
 
     /**

@@ -10,7 +10,7 @@
         <!-- Sidebar user (optional) -->
         <div class="user-panel mt-3 pb-3 mb-3 d-flex align-items-center">
             <div class="image">
-                <img src="{{ getAvatar(\Auth::user()->name) }}" class="img-circle elevation-2" alt="User Avatar">
+                <img src="{{ getAvatar(\Auth::user()->name, \Auth::user()->avatar_style) }}" class="img-circle elevation-2 tw__bg-white" alt="User Avatar">
             </div>
             <div class="info">
                 <a href="#" class="{{ !empty($sidebar_menu) ? ($sidebar_menu == 'profile' ? 'active' : '') : '' }} d-block">

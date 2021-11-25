@@ -31,7 +31,7 @@
             <div class="card card-primary card-outline">
                 <div class="card-body box-profile">
                     <div class="text-center">
-                        <img class="profile-user-img img-fluid img-circle" src="{{ getAvatar(\Auth::user()->name) }}" alt="User profile picture">
+                        <img class="profile-user-img img-fluid img-circle tw__bg-white" src="{{ getAvatar(\Auth::user()->name, \Auth::user()->avatar_style) }}" alt="User profile picture">
                     </div>
                     <h3 class="profile-username text-center">{{ \Auth::user()->name }}</h3>
                 </div>
@@ -54,7 +54,7 @@
                                 @csrf
                                 @method('PUT')
 
-                                <div class="form-group row align-items-center">
+                                <div class="form-group row">
                                     <label for="input-name" class="col-sm-2 col-form-label">Name</label>
                                     <div class="col-sm-10">
                                         <input type="name" class="form-control @error('name') is-invalid @enderror" id="input-name" name="name" placeholder="Nama" value="{{ \Auth::user()->name }}">
@@ -63,7 +63,7 @@
                                         @enderror
                                     </div>
                                 </div>
-                                <div class="form-group row align-items-center">
+                                <div class="form-group row">
                                     <label for="input-email" class="col-sm-2 col-form-label">Email</label>
                                     <div class="col-sm-10">
                                         <input type="email" class="form-control @error('email') is-invalid @enderror" id="input-email" name="email" placeholder="Email" value="{{ \Auth::user()->email }}">
@@ -72,7 +72,7 @@
                                         @enderror
                                     </div>
                                 </div>
-                                <div class="form-group row align-items-center">
+                                <div class="form-group row">
                                     <label for="input-username" class="col-sm-2 col-form-label">Username</label>
                                     <div class="col-sm-10">
                                         <input type="text" class="form-control @error('username') is-invalid @enderror" id="input-username" name="username" placeholder="Username" value="{{ \Auth::user()->username }}">
@@ -81,7 +81,35 @@
                                         @enderror
                                     </div>
                                 </div>
-                                <div class="form-group row align-items-center">
+                                <div class="form-group row">
+                                    <label for="input-avatar" class="col-sm-2 col-form-label">Avatar</label>
+                                    <div class="col-sm-10">
+                                        <div class="row">
+                                            <div class="col-12 col-md-3">
+                                                <div class="img-preview mb-2">
+                                                    <select class="form-control select2" id="input-avatar_style" name="avatar_style">
+                                                        @if (config('custom.avatar'))
+                                                            @foreach (config('custom.avatar') as $item)
+                                                                <option value="{{ $item }}" {{ empty(\Auth::user()->avatar_style) ? ($item == 'initials' ? 'selected' : '') : ($item == \Auth::user()->avatar_style ? 'selected' : '') }}>{{ $item }}</option>
+                                                            @endforeach
+                                                        @endif
+                                                    </select>
+                                                    
+                                                    <img class="img-responsive tw__mt-2" id="avatar-preview" width="100%;" style="padding:.25rem;background:#eee;display:block;" src="{{ getAvatar(\Auth::user()->name, \Auth::user()->avatar_style) }}">
+                                                </div>
+                                            </div>
+                                            {{-- <div class="col-12 col-md-9">
+                                                <div class="custom-file">
+                                                    <input type="file" class="custom-file-input " name="nazhir_picture" id="input-nazhir_picture" onchange="generatePreview($(this), 'picture')">
+                                                    <label class="custom-file-label" for="input-nazhir_picture">Choose file</label>
+                                                    
+                                                                            <small class="text-muted">Suggestion: Use a picture PNG extension</small>
+                                                </div>
+                                            </div> --}}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
                                     <label for="input-password" class="col-sm-2 col-form-label">Password</label>
                                     <div class="col-sm-10">
                                         <input type="password" name="fakepassword" id="fakepassword"/>
@@ -110,7 +138,7 @@
                                         @enderror
                                     </div>
                                 </div>
-                                <div class="form-group row align-items-center">
+                                <div class="form-group row">
                                     <div class="offset-sm-2 col-sm-10">
                                         <button type="button" onclick="formReset()" class="btn btn-sm btn-danger">Reset</button>
                                         <button type="submit" class="btn btn-primary btn-sm">Submit</button>
@@ -125,7 +153,7 @@
                                 @csrf
                                 @method('PUT')
 
-                                <div class="form-group row align-items-center">
+                                <div class="form-group row">
                                     <label for="input-name" class="col-sm-2 col-form-label">Lokasi</label>
                                     <div class="col-sm-10">
                                         <div class="row">
@@ -149,7 +177,7 @@
                                         @enderror
                                     </div>
                                 </div>
-                                {{-- <div class="form-group row align-items-center">
+                                {{-- <div class="form-group row">
                                     <div class="offset-sm-2 col-sm-10 tw__mt-4 lg:tw__mt-0">
                                         <button type="button" onclick="formReset()" class="btn btn-sm btn-danger">Reset</button>
                                         <button type="submit" class="btn btn-primary btn-sm">Submit</button>
@@ -232,6 +260,16 @@
                 $(item).remove();
             });
         }
+
+        const avatarStyle = () => {
+            let baseUrl = `https://avatars.dicebear.com/api`;
+            let userName = $("#input-name").val();
+            let style = $("#input-avatar_style").val();
+
+            let image = `${baseUrl}/${style}/${userName}.svg`;
+            $("#avatar-preview").attr('src', image);
+        }
+        
         $(document).ready((e) => {
             validateLocationDefault();
             addMoreLocation();
@@ -295,6 +333,18 @@
                     }
                 }
             });
+            $(".select2").select2({
+                theme: 'bootstrap4',
+                placeholder: 'Cari Kata kunci',
+            });
+        });
+
+        // Change Avatar Style
+        $("#input-name").change((e) => {
+            avatarStyle();
+        });
+        $("#input-avatar_style").change((e) => {
+            avatarStyle();
         });
 
         $("#input-password").change((e) => {

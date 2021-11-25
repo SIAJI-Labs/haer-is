@@ -118,15 +118,17 @@
         </div>
         <div class="card-body">
             <div class="card">
-                <div class="card-header">
+                <div class="card-header tw__flex tw__items-center">
                     <h3 class="card-title">Filter</h3>
+
+                    <button class="btn btn-sm btn-secondary tw__ml-auto" id="filter-now" disabled>Periode Sekarang</button>
                 </div>
                 <div class="card-body">
                     <div class="row">
                         <div class="col-12 col-lg-6 form-group">
                             <label>Tahun</label>
                             <select class="form-control" id="input_filter-year">
-                                @for ($i = date("Y"); $i >= date("Y", strtotime('2021-01-01')); $i--)
+                                @for ($i = date("Y"); $i >= date("Y", strtotime('2015-01-01')); $i--)
                                     <option value="{{ $i }}">{{ $i }}</option>
                                 @endfor
                             </select>
@@ -155,22 +157,25 @@
                 </thead>
             </table>
         </div>
+        <div class="card-footer">
+            <button class="btn btn-secondary btn-sm" onclick="refreshData($(this))"><i class="fas fa-sync-alt mr-2"></i>Refresh Data</button>
+        </div>
     </div>
 </section>
 @endsection
 
 @section('content_modal')
     {{-- Checkin Modal --}}
-    @include('content.system.dashboard.partials.modal-checkin')
+    @include('content.system.dashboard.partials.check-in.modal')
 
     {{-- Checkout Modal --}}
-    @include('content.system.dashboard.partials.modal-checkout')
+    @include('content.system.dashboard.partials.check-out.modal')
+
+    {{-- New Task Modal --}}
+    @include('content.system.dashboard.partials.new-task.modal')
 
     {{-- Pause Modal --}}
     @include('content.system.dashboard.partials.modal-pause')
-
-    {{-- New Task Modal --}}
-    @include('content.system.dashboard.partials.modal-newTask')
 
     {{-- Detail Modal --}}
     @include('content.system.dashboard.partials.modal-detail')
@@ -186,9 +191,14 @@
 @endsection
 
 @section('js_inline')
-    <script>
-        var activityCheckoutStart = 0;
+    {{-- Check-in --}}
+    @include('content.system.dashboard.partials.check-in.function-js')
+    {{-- Check-out --}}
+    @include('content.system.dashboard.partials.check-out.function-js')
+    {{-- New Task --}}
+    @include('content.system.dashboard.partials.new-task.function-js')
 
+    <script>
         const validateProgressInput = () => {
             $(".activity-progress").change((e) => {
                 // Validate Value
@@ -209,125 +219,6 @@
                 }
             });
         }
-        const addMoreActivity = () => {
-            let activityStart = 1;
-            let activityContent = $("#activityContent");
-            let activityAddMoreBtn = $("#activityAddMore-btn");
-
-            $(activityAddMoreBtn).click((e) => {
-                let template = `
-                    <tr>
-                        <td class="align-middle tw__text-center">
-                            <div class="custom-control custom-checkbox">
-                                <input class="custom-control-input" type="checkbox" id="input_${activityStart}-included" name="task[${activityStart}][include]" checked="" onclick="return false;">
-                                <label for="input_${activityStart}-included" class="custom-control-label"></label>
-                            </div>
-                        </td>
-                        <td>
-                            <input type="number" min="0" max="100" step="1" class="form-control activity-progress" name="task[${activityStart}][progress]" id="input_${activityStart}-progress" placeholder="Progress Aktivitas">
-                        </td>
-                        <td>
-                            <div class="input-group">
-                                <input type="text" name="task[${activityStart}][name]" class="form-control" id="input_${activityStart}-name" placeholder="Judul Aktivitas">
-
-                                <div class="input-group-append">
-                                    <button type="button" class="btn btn-danger btn-sm activity-remove"><i class="fas fa-times"></i></button>
-                                </div>
-                            </div>
-                        </td>
-                    </tr>
-                `;
-
-                $(template).appendTo($(activityContent));
-                activityStart++;
-                setTimeout(() => {
-                    validateProgressInput();
-                }, 0);
-            });
-            $(activityContent).on('click', '.activity-remove', (e) => {
-                const item = $(e.target).closest('tr');
-                $(item).remove();
-            });
-        }
-        const addMoreActivityCheckout = () => {
-            let activityCheckoutContent = $("#activityContentCheckout");
-            let activityCheckoutAddMoreBtn = $("#activityAddMoreCheckout-btn");
-
-            $(activityCheckoutAddMoreBtn).click((e) => {
-                let template = `
-                    <tr>
-                        <td class="align-middle tw__text-center">
-                            <div class="custom-control custom-checkbox">
-                                <input class="custom-control-input" type="checkbox" id="input_${activityCheckoutStart}-included" name="task[${activityCheckoutStart}][include]" checked="" onclick="return false;">
-                                <label for="input_${activityCheckoutStart}-included" class="custom-control-label"></label>
-                            </div>
-                        </td>
-                        <td>
-                            <input type="number" min="0" max="100" step="1" class="form-control activity-progress" name="task[${activityCheckoutStart}][progress]" id="input_${activityCheckoutStart}-progress" placeholder="Progress Aktivitas">
-                        </td>
-                        <td>
-                            <div class="input-group">
-                                <input type="text" name="task[${activityCheckoutStart}][name]" class="form-control" id="input_${activityCheckoutStart}-name" placeholder="Judul Aktivitas">
-
-                                <div class="input-group-append">
-                                    <button type="button" class="btn btn-danger btn-sm activity-remove"><i class="fas fa-times"></i></button>
-                                </div>
-                            </div>
-                        </td>
-                    </tr>
-                `;
-
-                $(template).appendTo($(activityContentCheckout));
-                activityCheckoutStart++;
-                setTimeout(() => {
-                    validateProgressInput();
-                }, 0);
-            });
-            $(activityCheckoutContent).on('click', '.activity-remove', (e) => {
-                const item = $(e.target).closest('tr');
-                $(item).remove();
-            });
-        }
-        const addMoreNewActivity = () => {
-            let newActivityStart = 1;
-            let newActivityContent = $("#newActivityContent");
-            let newActivityAddMoreBtn = $("#newActivityAddMore-btn");
-
-            $(newActivityAddMoreBtn).click((e) => {
-                let template = `
-                    <tr>
-                        <td class="align-middle tw__text-center">
-                            <div class="custom-control custom-checkbox">
-                                <input class="custom-control-input" type="checkbox" id="input_${newActivityStart}_new-included" name="task[${newActivityStart}][include]" checked="" onclick="return false;">
-                                <label for="input_${newActivityStart}_new-included" class="custom-control-label"></label>
-                            </div>
-                        </td>
-                        <td>
-                            <input type="number" min="0" max="100" step="1" class="form-control newActivity-progress" name="task[${newActivityStart}][progress]" id="input_${newActivityStart}_new-progress" placeholder="Progress Aktivitas">
-                        </td>
-                        <td>
-                            <div class="input-group">
-                                <input type="text" name="task[${newActivityStart}][name]" class="form-control" id="input_${newActivityStart}_new-name" placeholder="Judul Aktivitas">
-
-                                <div class="input-group-append">
-                                    <button type="button" class="btn btn-danger btn-sm activity_new-remove"><i class="fas fa-times"></i></button>
-                                </div>
-                            </div>
-                        </td>
-                    </tr>
-                `;
-
-                $(template).appendTo($(newActivityContent));
-                newActivityStart++;
-                setTimeout(() => {
-                    validateNewProgressInput();
-                }, 0);
-            });
-            $(newActivityContent).on('click', '.newActivity-remove', (e) => {
-                const item = $(e.target).closest('tr');
-                $(item).remove();
-            });
-        }
         const filterAttendanceDateTable = () => {
             let currYear = "{{ date('Y') }}";
             let selectedYear = $("#input_filter-year").val();
@@ -339,6 +230,8 @@
                     $(`#input_filter-option_month_${i}`).prop('disabled', true);
                 }
             } else {
+                $("#filter-now").attr('disabled', false);
+
                 for(let i = 1; i <= 12; i++){
                     $(`#input_filter-option_month_${i}`).prop('disabled', false);
                 }
@@ -478,20 +371,23 @@
                         "targets": 1,
                         "render": (row, type, data) => {
                             // let template = whatsappFormat();
+                            // Check-in Format
                             let formatedData = {
                                 'name': data.user.name,
                                 'date': moment(data.date).format('DD/MM/YYYY'),
                                 'time': data.checkin_time,
                                 'type': 'check-in',
-                                'location': !(jQuery.isEmptyObject(data.location)) ? data.location.value : null
+                                'location': !(jQuery.isEmptyObject(data.location)) ? data.location.value : '-'
                             };
                             let formatedTask = [];
                             if(!(jQuery.isEmptyObject(data.attendance_task))){
                                 (data.attendance_task).forEach((data, row) => {
-                                    formatedTask.push({
-                                        'name': data.task.name,
-                                        'progress': data.progress_start,
-                                    });
+                                    if(data.added_on == null || data.added_on == 'check-in'){
+                                        formatedTask.push({
+                                            'name': data.task.name,
+                                            'progress': data.progress_start,
+                                        });
+                                    }
                                 });
                             }
                             let formatedWhatsapp = whatsappFormat(formatedData, formatedTask);
@@ -518,7 +414,7 @@
                                 'date': moment(data.date).format('DD/MM/YYYY'),
                                 'time': data.checkout_time,
                                 'type': 'check-out',
-                                'location': !(jQuery.isEmptyObject(data.location)) ? data.location.value : null
+                                'location': !(jQuery.isEmptyObject(data.location)) ? data.location.value : '-'
                             };
                             let formatedTask = [];
                             if(!(jQuery.isEmptyObject(data.attendance_task))){
@@ -546,14 +442,18 @@
                         "orderable": false,
                         "render": (row, type, data) => {
                             return `
-                                <span class="tw__inline-flex tw__items-center tw__justify-center tw__p-1 tw__text-xs tw__font-bold tw__leading-none tw__text-blue-100 tw__bg-blue-400 tw__rounded-full">
-                                    <span class="tw__inline-flex tw__items-center tw__justify-center tw__p-1 tw__text-xs tw__leading-none tw__text-blue-400 tw__bg-blue-100 tw__rounded-full tw__mr-1">${data.attendance_task_count}</span>
-                                    <span class="tw__mr-1">Task</span>
-                                </span>
-                                <span class="tw__inline-flex tw__items-center tw__justify-center tw__p-1 tw__text-xs tw__font-bold tw__leading-none tw__text-red-100 tw__bg-indigo-400 tw__rounded-full">
-                                    <span class="tw__inline-flex tw__items-center tw__justify-center tw__p-1 tw__text-xs tw__leading-none tw__text-indigo-400 tw__bg-indigo-100 tw__rounded-full tw__mr-1">${data.attendance_pause_count}</span>
-                                    <span class="tw__mr-1">Pause</span>
-                                </span>
+                                <div class="block mb-1">
+                                    <span class="tw__inline-flex tw__items-center tw__justify-center tw__p-1 tw__text-xs tw__font-bold tw__leading-none tw__text-blue-100 tw__bg-blue-400 tw__rounded-full">
+                                        <span class="tw__inline-flex tw__items-center tw__justify-center tw__p-1 tw__text-xs tw__leading-none tw__text-blue-400 tw__bg-blue-100 tw__rounded-full tw__mr-1 tw__h-4" style="min-width: 1rem;">${data.attendance_task_count}</span>
+                                        <span class="tw__mr-1">Task</span>
+                                    </span>
+                                </div>
+                                <div class="block">
+                                    <span class="tw__inline-flex tw__items-center tw__justify-center tw__p-1 tw__text-xs tw__font-bold tw__leading-none tw__text-red-100 tw__bg-indigo-400 tw__rounded-full">
+                                        <span class="tw__inline-flex tw__items-center tw__justify-center tw__p-1 tw__text-xs tw__leading-none tw__text-indigo-400 tw__bg-indigo-100 tw__rounded-full tw__mr-1 tw__h-4" style="min-width: 1rem;">${data.attendance_pause_count}x</span>
+                                        <span class="tw__mr-1">Pause</span>
+                                    </span>
+                                </div>
                             `;
                         }
                     }, {
@@ -647,21 +547,46 @@
                 $("#attendance-table").DataTable().ajax.reload();
             });
         });
-
         $("#input_filter-month").change((e) => {
             setTimeout((e) => {
+                let currYear = "{{ date('Y') }}";
+                let currMonth = "{{ date('m') }}";
+                if($("#input_filter-month").val() != currMonth || $("#input_filter-year").val() != currYear){
+                    $("#filter-now").attr('disabled', false);
+                } else {
+                    $("#filter-now").attr('disabled', true);
+                }
+
                 $("#attendance-table").DataTable().ajax.reload();
             });
         });
+        $("#filter-now").click((e) => {
+            $("#input_filter-year").val("{{ date("Y") }}").change();
 
-        function displayTime()
-        {
+            $(e.target).attr('disabled', true);
+        });
+
+        function refreshData(el){
+            $(el).attr('disabled', true);
+            $(el).html('<i class="fas fa-sync fa-spin mr-2"></i>Loading...');
+            $("#attendance-table").DataTable().ajax.reload((e) => {
+                setTimeout((e) => {
+                    $(el).attr('disabled', false);
+                    $(el).html('<i class="fas fa-sync mr-2"></i>Refresh Data');
+                }, 250);
+            });
+        }
+
+        function displayTime(){
             // let myTime = setTimeout(displayTimeNow(), 1000);
 
             var refresh = 1000; // Refresh rate in milli seconds
             mytime = setInterval(() => {
                 let data = displayTimeNow();
                 let rawDate = new Date(moment(data.date, 'DD/MM/YYYY'));
+                // console.log(data);
+                // console.log(rawDate);
+                // console.log(moment(rawDate).format('dddd'));
                 let date = `${convertMomentJsToIndonesia(rawDate, 'days')}, ${moment(rawDate).format('DD')} ${convertMomentJsToIndonesia(rawDate, 'months')} ${moment(rawDate).format('YYYY')}`;
 
                 $("#time-now .time").text(data.time);
@@ -669,105 +594,6 @@
             }, refresh);
         }
 
-        function newTask(uuid, checkinDate){
-            $.get(`{{ route('system.json.attendance.index') }}/${uuid}`, (result) => {
-                console.log(result);
-                let data = result.data;
-
-                let currTaskTemplate = [];
-                $.each(data.attendance_task, (row, data) => {
-                    console.log(data);
-
-                    currTaskTemplate.push(`
-                        <tr>
-                            <td class="align-middle tw__text-center">
-                                <div class="custom-control custom-checkbox">
-                                    <input class="custom-control-input" type="checkbox" checked="" onclick="return false;">
-                                    <label class="custom-control-label"></label>
-                                </div>
-                            </td>
-                            <td>
-                                <input type="number" min="0" max="100" step="1" class="form-control newActivity-progress" placeholder="Progress Aktivitas" value="${data.task.progress}" readonly>
-                            </td>
-                            <td>
-                                <input type="text" class="form-control" placeholder="Judul Aktivitas" value="${data.task.name}" readonly>
-                            </td>
-                        </tr>
-                    `);
-                });
-                if(!(jQuery.isEmptyObject(currTaskTemplate))){
-                    $("#modalNewTask #newActivityContent").prepend($(currTaskTemplate.join()));
-                }
-
-                setTimeout((e) => {
-                    $("#modalNewTask").modal('show');
-                }, 0);
-            });
-
-        }
-        function checkOut(uuid){
-            activityCheckoutStart = 0;
-
-            $.get(`{{ route('system.json.attendance.index') }}/${uuid}`, (result) => {
-                let data = result.data
-
-                // Append Attendance Alert
-                let checkoutAlert = $("#modalCheckOut #checkout-alert");
-                $(checkoutAlert).empty();
-                $(`
-                    <div class="tw__mb-4 tw__bg-blue-100 tw__text-blue-700 tw__px-4 tw__py-3 tw__rounded tw__relative" role="alert">
-                        <strong class="tw__font-bold">Data Kehadiran!</strong>
-                        <span class="tw__block">Anda melakukan check-in kehadiran pada <u>${convertMomentJsToIndonesia(data.date, 'days')}, ${moment(data.date).format('MMMM Do, YYYY')}, ${data.checkin_time} WIB</u></span>
-                    </div>
-                `).appendTo($(checkoutAlert));
-
-                if(!(jQuery.isEmptyObject(data.location))){
-                    $('#input-checkout_location').val(`${data.location.value}${data.location.is_default ? ' - Default' : ''}`);
-                }
-                // Update Data
-                $("#modalCheckOut").attr('action', `{{ route('system.attendance.index') }}/${data.uuid}`);
-                $('#input-checkout_date').data('daterangepicker').setStartDate(moment(data.date).format('DD/MM/YYYY'));
-                $('#input-checkout_date').data('daterangepicker').setEndDate(moment(data.date).format('DD/MM/YYYY'));
-                $("#input-checkout_date").val(moment(data.date).format('DD/MM/YYYY'));
-                // Update Task Data
-                let taskTemplate = [];
-                let contentContainer = $("#modalCheckOut #activityContentCheckout");
-                $(contentContainer).empty();
-
-                let taskCount = 0;
-                $.each(data.attendance_task, (row, data) => {
-                    console.log(data);
-
-                    taskTemplate.push(`
-                        <tr>
-                            <td class="align-middle tw__text-center">
-                                <input type="hidden" name="task[${row}][validate]" value="${data.uuid}" readonly>
-
-                                <div class="custom-control custom-checkbox">
-                                    <input class="custom-control-input" type="checkbox" id="input_${row}-checkout_included" name="task[${row}][include]" checked="" onclick="return false;">
-                                    <label for="input_0-checkout_included" class="custom-control-label"></label>
-                                </div>
-                            </td>
-                            <td>
-                                <input type="number" min="0" max="100" step="1" class="form-control activity-progress" name="task[${row}][progress]" id="input_${row}-checkout_progress" value="${data.progress_end}" placeholder="Progress Aktivitas">
-                            </td>
-                            <td>
-                                <input type="text" name="task[${row}][name]" class="form-control" id="input_${row}-checkout_name" value="${data.task.name}" placeholder="Judul Aktivitas" readonly>
-                            </td>
-                        </tr>
-                    `);
-                    taskCount++;
-                });
-                if(!(jQuery.isEmptyObject(taskTemplate))){
-                    activityCheckoutStart = taskCount;
-                    $(taskTemplate.join()).appendTo($(contentContainer));
-                }
-
-                setTimeout((e) => {
-                    $("#modalCheckOut").modal('show');
-                });
-            });
-        }
         function attendanceDetail(uuid){
             $.get(`{{ route('system.json.attendance.index') }}/${uuid}`, (result) => {
                 let data = result.data;
@@ -815,103 +641,6 @@
                 });
             });
         }
-
-        $("#modalCheckIn").submit((e) => {
-            e.preventDefault();
-            let targetUrl = $(e.target).attr('action');
-
-            let selectedRow = $("#existingActivity-task").DataTable().column(0).checkboxes.selected();
-            let selectedId = [];
-            $.each(selectedRow, (index, data) => {
-                selectedId.push(data);
-            });
-
-            $.post(targetUrl, ($(e.target).serialize()+`&validate=${selectedId.join(',')}`), (result) => {
-                Swal.fire({
-                    title: "Aksi Berhasil",
-                    text: result.message,
-                    icon: 'success',
-                    confirmButtonText: 'Tutup Pesan!',
-                    reverseButtons: true,
-                }).then((result) => {
-                    location.reload();
-                });
-                // console.log(result);
-            });
-        });
-        $('#modalCheckIn').on('hidden.bs.modal', function (e) {
-            $("#activityContent").empty();
-            $(`
-                <tr>
-                    <td class="align-middle tw__text-center">
-                        <div class="custom-control custom-checkbox">
-                            <input class="custom-control-input" type="checkbox" id="input_0-included" name="task[0][include]" checked="" onclick="return false;">
-                            <label for="input_0-included" class="custom-control-label"></label>
-                        </div>
-                    </td>
-                    <td>
-                        <input type="number" min="0" max="100" step="1" class="form-control activity-progress" name="task[0][progress]" id="input_0-progress" placeholder="Progress Aktivitas">
-                    </td>
-                    <td>
-                        <input type="text" name="task[0][name]" class="form-control" id="input_0-name" placeholder="Judul Aktivitas">
-                    </td>
-                </tr>
-            `).appendTo($("#activityContent"));
-        });
-
-        $("#modalNewTask").submit((e) => {
-            e.preventDefault();
-            let targetUrl = $(e.target).attr('action');
-
-            $.post(targetUrl, ($(e.target).serialize()), (result) => {
-                Swal.fire({
-                    title: "Aksi Berhasil",
-                    text: result.message,
-                    icon: 'success',
-                    confirmButtonText: 'Tutup Pesan!',
-                    reverseButtons: true,
-                }).then((result) => {
-                    location.reload();
-                });
-                // console.log(result);
-            });
-        });
-        $('#modalNewTask').on('hidden.bs.modal', function (e) {
-            $("#newActivityContent").empty();
-            $(`
-                <tr>
-                    <td class="align-middle tw__text-center">
-                        <div class="custom-control custom-checkbox">
-                            <input class="custom-control-input" type="checkbox" id="input_0_new-included" name="task[0][include]" checked="" onclick="return false;">
-                            <label for="input_0_new-included" class="custom-control-label"></label>
-                        </div>
-                    </td>
-                    <td>
-                        <input type="number" min="0" max="100" step="1" class="form-control activity-progress" name="task[0][progress]" id="input_0_new-progress" placeholder="Progress Aktivitas">
-                    </td>
-                    <td>
-                        <input type="text" name="task[0][name]" class="form-control" id="input_0_new-name" placeholder="Judul Aktivitas">
-                    </td>
-                </tr>
-            `).appendTo($("#newActivityContent"));
-        });
-
-        $("#modalCheckOut").submit((e) => {
-            e.preventDefault();
-            let targetUrl = $(e.target).attr('action');
-
-            $.post(targetUrl, $(e.target).serialize(), (result) => {
-                Swal.fire({
-                    title: "Aksi Berhasil",
-                    text: result.message,
-                    icon: 'success',
-                    confirmButtonText: 'Tutup Pesan!',
-                    reverseButtons: true,
-                }).then((result) => {
-                    location.reload();
-                });
-            });
-        });
 
         $("#modalPause").submit((e) => {
             e.preventDefault();

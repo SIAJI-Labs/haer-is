@@ -19,7 +19,7 @@ function displayTimeNow(now = new Date())
     let day = now.getDate().toString();
     day = day.length == 1 ? 0+day : day;
     // Format Date/Month
-    let month = now.getMonth().toString();
+    let month = (now.getMonth() + 1).toString();
     month = month.length == 1 ? 0+month : month;
 
     let time = `${hours}:${minutes}:${seconds}`;
