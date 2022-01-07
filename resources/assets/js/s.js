@@ -3,8 +3,7 @@
  * @param {*} now 
  * @returns 
  */
-function displayTimeNow(now = new Date())
-{
+function displayTimeNow(now = new Date()){
     // Format Hours
     let hours = now.getHours().toString();
     hours = hours.length == 1 ? 0+hours : hours;
@@ -37,8 +36,7 @@ function displayTimeNow(now = new Date())
  * @param {*} task 
  * @param {*} type 
  */
-function whatsappFormat(data, task)
-{
+function whatsappFormat(data, task){
     let template = ``;
     let formatedType = 'Check-In';
     if(data.type == 'check-out'){
@@ -141,4 +139,12 @@ function convertMomentJsToIndonesia(rawDate, type = 'days'){
     }
 
     return result;
+}
+
+/**
+ * 
+ * @param {*} string
+ */
+function escapeHTML(str){
+    return new Option(str).innerHTML;
 }

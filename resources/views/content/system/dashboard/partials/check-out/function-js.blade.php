@@ -49,7 +49,7 @@
                                 <input type="number" min="0" max="100" step="1" class="form-control activity-progress" name="task[${row}][progress]" id="input_${row}-checkout_progress" value="${data.progress_end}" placeholder="Progress Aktivitas">
                             </td>
                             <td>
-                                <input type="text" name="task[${row}][name]" class="form-control" id="input_${row}-checkout_name" value="${data.task.name}" placeholder="Judul Aktivitas" readonly>
+                                <input type="text" name="task[${row}][name]" class="form-control" id="input_${row}-checkout_name" value="${escapeHTML(data.task.name)}" placeholder="Judul Aktivitas" readonly>
                             </td>
                         </tr>
                         <tr>
