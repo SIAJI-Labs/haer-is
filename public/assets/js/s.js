@@ -51,7 +51,7 @@ function whatsappFormat(data, task){
     template += `%0A${data.name} | ${data.date} | ${data.time}`;
     template += `%0AActivities`;
     task.forEach((data, row) => {
-        template += `%0A- ${data.progress > 0 ? '['+data.progress+'%] ' : ''}${data.name}`;
+        template += `%0A- ${data.progress > 0 ? '['+data.progress+'%] ' : ''}${encodeURIComponent(data.name)}`;
     });
     template += `%0ALocation: ${data.location}`;
     return template;

@@ -370,6 +370,7 @@
                     }, {
                         "targets": 1,
                         "render": (row, type, data) => {
+                            let uuid = data.uuid;
                             // let template = whatsappFormat();
                             // Check-in Format
                             let formatedData = {
@@ -383,8 +384,13 @@
                             if(!(jQuery.isEmptyObject(data.attendance_task))){
                                 (data.attendance_task).forEach((data, row) => {
                                     if(data.added_on == null || data.added_on == 'check-in'){
+                                        var encodedStr = data.task.name;
+                                        var parser = new DOMParser;
+                                        var dom = parser.parseFromString('<!doctype html><body>' + encodedStr, 'text/html');
+                                        var decodedString = dom.body.textContent;
+                                        
                                         formatedTask.push({
-                                            'name': data.task.name,
+                                            'name': decodedString,
                                             'progress': data.progress_start,
                                         });
                                     }
@@ -419,8 +425,13 @@
                             let formatedTask = [];
                             if(!(jQuery.isEmptyObject(data.attendance_task))){
                                 (data.attendance_task).forEach((data, row) => {
+                                    var encodedStr = data.task.name;
+                                    var parser = new DOMParser;
+                                    var dom = parser.parseFromString('<!doctype html><body>' + encodedStr, 'text/html');
+                                    var decodedString = dom.body.textContent;
+
                                     formatedTask.push({
-                                        'name': data.task.name,
+                                        'name': decodedString,
                                         'progress': data.progress_end
                                     });
                                 });

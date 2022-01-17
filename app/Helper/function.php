@@ -32,9 +32,9 @@ function whatsappFormat($attendanceData, $type = 'check-in')
     $template .= "%0AActivities";
     foreach($attendanceData->attendanceTask as $attendanceTask){
         if(strtolower($type) == 'check-in'){
-            $template .= "%0A".($attendanceTask->start > 0 ? "" : "[".$attendanceTask->start."%] {$attendanceTask->task->name}");
+            $template .= "%0A".($attendanceTask->start > 0 ? "" : "[".$attendanceTask->start."%]".urlencode($attendanceTask->task->name));
         } else {
-            $template .= "%0A".($attendanceTask->end > 0 ? "" : "[".$attendanceTask->end."%] {$attendanceTask->task->name}");
+            $template .= "%0A".($attendanceTask->end > 0 ? "" : "[".$attendanceTask->end."%]".urlencode($attendanceTask->task->name));
         }
     }
     $template .= "%0ALocation: YEWI";
